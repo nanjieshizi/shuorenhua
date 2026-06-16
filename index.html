@@ -128,7 +128,7 @@
       padding: 120px 40px 80px;
       max-width: 1200px;
       margin: 0 auto;
-      gap: 180px;
+      gap: 220px;
       justify-content: center;
       position: relative;
     }
@@ -202,6 +202,7 @@
       margin-top: 20px;
       line-height: 1.7;
       max-width: 480px;
+      white-space: nowrap;
       animation: fadeUp 0.8s var(--bounce) 0.2s both;
     }
 
@@ -282,6 +283,7 @@
       align-items: center;
       gap: 6px;
       padding: 8px 14px;
+      white-space: nowrap;
       border-radius: 100px;
       border: 1px solid var(--slate-200);
       background: rgba(255,255,255,0.6);
@@ -1394,7 +1396,7 @@
     function navigateTo(page) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
-      if (target) { target.classList.add('active'); if (page === 'results') target.classList.remove('section-hidden'); }
+      if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } }
       window.scrollTo(0, 0);
       if (page === 'home') { setTimeout(alignAnnotations, 150); setTimeout(alignAnnotations, 400); }
     }
@@ -1724,6 +1726,7 @@
     function clickCard(card) {
       var id = card.id;
       clearHighlights();
+      card.classList.add('highlighted');
       var el = document.querySelector('[data-aid="' + id + '"]');
       if (el) { el.classList.add('wavy-active'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       var suggest = document.getElementById('suggest-' + id);
