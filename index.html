@@ -128,7 +128,7 @@
       padding: 120px 40px 80px;
       max-width: 1200px;
       margin: 0 auto;
-      gap: 150px;
+      gap: 180px;
       justify-content: center;
       position: relative;
     }
@@ -274,14 +274,14 @@
       display: flex;
       gap: 10px;
       margin-top: 28px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       animation: fadeUp 0.8s var(--bounce) 0.35s both;
     }
     .hero-tags a {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 18px;
+      padding: 8px 14px;
       border-radius: 100px;
       border: 1px solid var(--slate-200);
       background: rgba(255,255,255,0.6);
@@ -1027,11 +1027,17 @@
     }
 
     /* Five-color highlights */
-    .hl-r { font-weight: 700; color: #991B1B; background: linear-gradient(180deg, transparent 56%, rgba(239,68,68,0.14) 56%, rgba(239,68,68,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; }
-    .hl-o { font-weight: 700; color: #9A3412; background: linear-gradient(180deg, transparent 56%, rgba(249,115,22,0.14) 56%, rgba(249,115,22,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; }
-    .hl-b { font-weight: 700; color: #1E40AF; background: linear-gradient(180deg, transparent 56%, rgba(59,130,246,0.12) 56%, rgba(59,130,246,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; }
-    .hl-a { font-weight: 700; color: #92400E; background: linear-gradient(180deg, transparent 56%, rgba(245,158,11,0.14) 56%, rgba(245,158,11,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; }
-    .hl-g { font-weight: 700; color: #065F46; background: linear-gradient(180deg, transparent 56%, rgba(16,185,129,0.12) 56%, rgba(16,185,129,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; }
+    .hl-r { font-weight: 700; color: #991B1B; background: linear-gradient(180deg, transparent 56%, rgba(239,68,68,0.14) 56%, rgba(239,68,68,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-o { font-weight: 700; color: #9A3412; background: linear-gradient(180deg, transparent 56%, rgba(249,115,22,0.14) 56%, rgba(249,115,22,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-b { font-weight: 700; color: #1E40AF; background: linear-gradient(180deg, transparent 56%, rgba(59,130,246,0.12) 56%, rgba(59,130,246,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-a { font-weight: 700; color: #92400E; background: linear-gradient(180deg, transparent 56%, rgba(245,158,11,0.14) 56%, rgba(245,158,11,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-g { font-weight: 700; color: #065F46; background: linear-gradient(180deg, transparent 56%, rgba(16,185,129,0.12) 56%, rgba(16,185,129,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-seq { font-size: 8px; font-weight: 700; vertical-align: super; line-height: 1; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1.2px solid currentColor; }
+    .hl-r.wavy-active { text-decoration: underline wavy #EF4444 2px; text-underline-offset: 5px; }
+    .hl-o.wavy-active { text-decoration: underline wavy #F97316 2px; text-underline-offset: 5px; }
+    .hl-b.wavy-active { text-decoration: underline wavy #3B82F6 2px; text-underline-offset: 5px; }
+    .hl-a.wavy-active { text-decoration: underline wavy #F59E0B 2px; text-underline-offset: 5px; }
+    .hl-g.wavy-active { text-decoration: underline wavy #10B981 2px; text-underline-offset: 5px; }
 
     /* Annotation cards */
     .compare-right .annot-card {
@@ -1088,6 +1094,18 @@
       white-space: nowrap; z-index: 1;
     }
     .annot-card .ac-tip svg { width: 10px; height: 10px; color: var(--slate-400); transition: transform 0.3s ease; }
+    .annot-card.highlighted {
+      border-color: #EF4444 !important;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.12), 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .annot-card .ac-seq {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: transparent; color: var(--slate-500);
+      border: 1.5px solid var(--slate-300);
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+      margin-right: 2px;
+    }
 
     .results-actions {
       display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 36px;
@@ -1570,12 +1588,14 @@
       return count;
     }
 
-    function buildClauseHTML(c, ci) {
+    function buildClauseHTML(c, ci, seqMap) {
       var text = c.text;
       if (c.annotations) {
         c.annotations.forEach(function(a, ai) {
           var id = 'aid-' + (getClauseAidBase(ci) + ai);
-          text = text.replace(a.text, '<span class="hl-' + a.type[0] + '" data-aid="' + id + '">' + a.text + '</span>');
+          var key = ci + '-' + ai;
+          var seq = seqMap && seqMap[key] ? '<sup class="hl-seq">' + seqMap[key] + '</sup>' : '';
+          text = text.replace(a.text, '<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + a.text + '</span>');
         });
       }
       return '<div class="c-clause"><span class="c-num">' + c.num + '</span><span class="c-text">' + text + '</span></div>';
@@ -1617,10 +1637,19 @@
       if (!body || !paginatedPages.length) return;
       var clauses = paginatedPages[currentPage];
 
+      // Build page-level annotation seq map
+      var seqMap = {}, seqN = 0;
+      clauses.forEach(function(c) {
+        var ci = allClausesRef.indexOf(c);
+        if (c.annotations && c.annotations.length) {
+          c.annotations.forEach(function(a, ai) { seqMap[ci + '-' + ai] = ++seqN; });
+        }
+      });
+
       // Build left panel — current page clauses
       body.innerHTML = clauses.map(function(c) {
         var ci = allClausesRef.indexOf(c);
-        return buildClauseHTML(c, ci);
+        return buildClauseHTML(c, ci, seqMap);
       }).join('');
 
       // Rebuild right panel — only annotations for current page
@@ -1632,12 +1661,13 @@
           c.annotations.forEach(function(a, ai) {
             hasAnnots = true;
             var id = 'aid-' + (getClauseAidBase(ci) + ai);
+            var pageSeq = seqMap[ci + '-' + ai];
             var card = document.createElement('div');
             card.className = 'annot-card type-' + a.type;
             card.id = id;
             card.style.animationDelay = '0s';
-            card.setAttribute('onclick', 'toggleSuggest(\'suggest-' + id + '\', this)');
-            card.innerHTML = '<div class="ac-header"><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '低' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
+            card.setAttribute('onclick', 'event.stopPropagation();clickCard(this)');
+            card.innerHTML = '<div class="ac-header"><span class="ac-seq">' + pageSeq + '</span><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '低' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
             right.appendChild(card);
           });
         }
@@ -1670,12 +1700,38 @@
       next.disabled = currentPage >= paginatedPages.length - 1;
     }
 
-    function toggleSuggest(id, card) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      var expanded = el.classList.toggle('expanded');
-      var svg = card.querySelector('.ac-tip svg');
-      if (svg) svg.style.transform = expanded ? 'rotate(45deg)' : 'rotate(0deg)';
+    function clearHighlights() {
+      document.querySelectorAll('.annot-card.highlighted').forEach(function(c) { c.classList.remove('highlighted'); });
+      document.querySelectorAll('.wavy-active').forEach(function(s) { s.classList.remove('wavy-active'); });
+    }
+
+    function clickHighlight(el) {
+      var aid = el.getAttribute('data-aid');
+      var card = document.getElementById(aid);
+      if (!card) return;
+      clearHighlights();
+      el.classList.add('wavy-active');
+      card.classList.add('highlighted');
+      var suggest = document.getElementById('suggest-' + aid);
+      if (suggest && !suggest.classList.contains('expanded')) {
+        suggest.classList.add('expanded');
+        var tipSvg = card.querySelector('.ac-tip svg');
+        if (tipSvg) tipSvg.style.transform = 'rotate(45deg)';
+      }
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clickCard(card) {
+      var id = card.id;
+      clearHighlights();
+      var el = document.querySelector('[data-aid="' + id + '"]');
+      if (el) { el.classList.add('wavy-active'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      var suggest = document.getElementById('suggest-' + id);
+      if (suggest) {
+        var expanded = suggest.classList.toggle('expanded');
+        var tipSvg = card.querySelector('.ac-tip svg');
+        if (tipSvg) tipSvg.style.transform = expanded ? 'rotate(45deg)' : 'rotate(0deg)';
+      }
     }
 
     function prevPage() {
