@@ -755,6 +755,25 @@
     }
     .modal-panel textarea:focus { outline: none; border-color: var(--red-p); box-shadow: 0 0 0 3px rgba(220,38,38,0.08); }
     .modal-panel textarea::placeholder { color: var(--slate-300); font-family: 'Noto Sans SC', sans-serif; }
+    .ta-wrap { position: relative; }
+    .ta-wrap textarea { padding-right: 36px; }
+    .ta-clear {
+      position: absolute; top: 12px; right: 10px;
+      width: 24px; height: 24px; border-radius: 50%; border: none;
+      background: var(--slate-200); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-400); transition: all 0.2s ease;
+    }
+    .ta-clear:hover { background: var(--slate-300); color: var(--slate-600); }
+    .ta-clear svg { width: 12px; height: 12px; }
+    .file-delete {
+      margin-left: 4px; width: 20px; height: 20px; border-radius: 50%; border: none;
+      background: transparent; cursor: pointer; display: inline-flex;
+      align-items: center; justify-content: center; color: var(--slate-400);
+      transition: all 0.2s ease; flex-shrink: 0;
+    }
+    .file-delete:hover { background: #FEF2F2; color: #EF4444; }
+    .file-delete svg { width: 12px; height: 12px; }
 
     .modal-upload {
       border: 2px dashed var(--slate-300); border-radius: 16px; padding: 40px 24px;
@@ -762,7 +781,7 @@
     }
     .modal-upload:hover { border-color: var(--red-p); background: var(--red-plight); }
     .modal-upload.dragover { border-color: var(--red-p); background: var(--red-plight); }
-    .modal-upload svg { width: 40px; height: 40px; color: var(--slate-300); margin-bottom: 12px; }
+    #upPrompt svg { width: 40px; height: 40px; color: var(--slate-300); margin-bottom: 12px; }
     .modal-upload .up-text { font-size: 15px; font-weight: 600; color: var(--slate-600); margin-bottom: 2px; }
     .modal-upload .up-hint { font-size: 13px; color: var(--slate-400); }
     .modal-upload .file-confirm { display: none; align-items: center; gap: 6px; padding: 8px 14px; background: var(--green-bg); border-radius: 8px; font-size: 13px; color: #065F46; margin-top: 12px; }
@@ -1312,6 +1331,8 @@
       .pagination-bar .pg-btn { padding: 6px 14px; font-size: 12px; }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 
@@ -1367,8 +1388,8 @@
       <button class="modal-close" onclick="closeModal()">X</button>
       <div class="modal-header"><h2>开始分析合同</h2><p>粘贴文本或上传文件，AI自动识别合同类型并分析风险条款</p></div>
       <div class="modal-tabs"><button class="active" onclick="switchInputTab('paste')"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2H11L13 4V13C13 13.5523 12.5523 14 12 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2Z" stroke="currentColor" stroke-width="1.3"/></svg>粘贴文本</button><button onclick="switchInputTab('upload')"><svg viewBox="0 0 16 16" fill="none"><path d="M8 11V3M4 7L8 3L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>上传文件</button></div>
-      <div class="modal-panel active" id="panel-paste"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea></div>
-      <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持JPG/PNG/PDF</div><div class="file-confirm" id="fileConfirm"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M4 8L7 11L12 5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="fileName">文件已上传</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
+      <div class="modal-panel active" id="panel-paste"><div class="ta-wrap"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea><button class="ta-clear" onclick="clearTextarea()" title="清空内容"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
+      <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持JPG/PNG/PDF</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
       <div class="modal-type"><label>合同类型</label><select id="contract-type"><option value="租房合同">租房合同</option><option value="贷款协议">贷款协议</option><option value="保险合同">保险合同</option><option value="劳动协议">劳动协议</option><option value="用户协议">用户协议</option><option value="其他">其他</option></select></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><span class="spinner"></span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
       <div class="modal-footer"><div class="free-count"><span class="dot"></span>今日免费<span>1</span>次 · $3/次 · $8/月</div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
@@ -1506,6 +1527,15 @@
 
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', history: JSON.parse(localStorage.getItem('contractHistory') || '[]') };
 
+    function clearTextarea() { document.getElementById('contract-input').value = ''; }
+    function clearFile() {
+      AppState.uploadedFile = null; AppState.uploadedText = '';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('fileConfirm').classList.remove('visible');
+      document.getElementById('upPrompt').style.display = '';
+    }
+    function clearInput() { clearTextarea(); clearFile(); }
+
     function switchInputTab(tab) {
       AppState.currentTab = tab;
       document.querySelectorAll('.modal-tabs button').forEach(function(b) { b.classList.remove('active'); });
@@ -1529,8 +1559,39 @@
       var allowed = ['image/jpeg','image/png','application/pdf'];
       if (allowed.indexOf(file.type) === -1) { alert('请上传JPG/PNG/PDF格式'); return; }
       AppState.uploadedFile = file;
+      AppState.uploadedText = '';
       document.getElementById('fileName').textContent = file.name;
       document.getElementById('fileConfirm').classList.add('visible');
+      document.getElementById('upPrompt').style.display = 'none';
+
+      var reader = new FileReader();
+      reader.onload = async function(e) {
+        var buf = e.target.result;
+        try {
+          if (file.type === 'application/pdf') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+            var full = '';
+            for (var i = 1; i <= pdf.numPages; i++) {
+              var page = await pdf.getPage(i);
+              var ct = await page.getTextContent();
+              full += ct.items.map(function(it) { return it.str; }).join(' ') + '\n';
+            }
+            AppState.uploadedText = full.trim();
+          } else if (file.type.indexOf('image/') === 0) {
+            var blob = new Blob([buf], { type: file.type });
+            var url = URL.createObjectURL(blob);
+            var res = await Tesseract.recognize(url, 'chi_sim+eng');
+            AppState.uploadedText = res.data.text.trim();
+            URL.revokeObjectURL(url);
+          } else {
+            AppState.uploadedText = new TextDecoder().decode(buf);
+          }
+        } catch(err) {
+          AppState.uploadedText = '[文件识别失败: ' + file.name + ']';
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     function generateMockResults(type) {
@@ -1564,20 +1625,48 @@
       return contract;
     }
 
-    function startTranslation() {
+    async function startTranslation() {
       if (AppState.isTranslating) return;
       AppState.isTranslating = true;
       var btn = document.getElementById('btnTranslate');
       btn.classList.add('loading'); btn.disabled = true;
       var type = document.getElementById('contract-type').value;
       AppState.currentContractType = type;
-      setTimeout(function() {
-        var results = generateMockResults(type);
+
+      var text = document.getElementById('contract-input').value.trim();
+      var isFile = AppState.uploadedFile && !text;
+      if (isFile) {
+        text = AppState.uploadedText || '';
+        if (!text) { alert('文件读取中，请稍后再试'); btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return; }
+      }
+      if (!text) text = '房屋租赁合同示例';
+
+      try {
+        var body = { text: text, type: type };
+        if (isFile && AppState.uploadedFile.type.indexOf('image/') === 0) body.ocr = true;
+        var response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        var data = await response.json();
+        if (data.error) throw new Error(data.error);
         closeModal();
-        showResults(results, type);
-        btn.classList.remove('loading'); btn.disabled = false;
-        AppState.isTranslating = false;
-      }, 1500);
+        clearInput();
+        showResults(data, type);
+      } catch (e) {
+        var msg = e.message || '网络超时';
+        closeModal();
+        showResults(generateMockResults(type), type);
+        if (msg.indexOf('超时') !== -1 || msg.indexOf('Timeout') !== -1 || msg.indexOf('timed out') !== -1) {
+          alert('AI 分析超时，已展示离线分析结果。请尝试缩短合同内容或稍后重试。');
+        } else if (msg !== '网络超时') {
+          console.warn('API 调用失败:', msg);
+        }
+      }
+
+      btn.classList.remove('loading'); btn.disabled = false;
+      AppState.isTranslating = false;
     }
 
     function showResults(results, contractType) {

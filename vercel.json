@@ -1,0 +1,9 @@
+{
+  "buildCommand": "mkdir -p out && cp index.html out/",
+  "outputDirectory": "out",
+  "functions": {
+    "api/analyze.js": {
+      "maxDuration": 60
+    }
+  }
+}
