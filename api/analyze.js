@@ -21,35 +21,75 @@ export default async function handler(req, res) {
 
     const prompt = `你是一位资深劳动法与合同审查专家。请逐条分析以下合同内容，找出其中违法、不合理、或存在风险的条款。
 
-以严格的 JSON 格式返回（不要包含任何 markdown 标记、代码块或其他解释文字）：
+你必须严格按照以下 JSON 格式和规则返回，不允许任何偏差。
+
+## 输出格式（严格 JSON，不要 Markdown 标记）
 
 {
-  "score": 数字(0-100的风险评分),
+  "title": "合同类型名称",
+  "score": 82,
   "clauses": [
     {
-      "num": 数字(条款序号),
-      "text": "该条款的完整原文",
+      "num": 3,
+      "text": "该条款完整原文...",
       "annotations": [
         {
-          "text": "需要高亮标注的问题词句（必须在text字段中精确出现）",
-          "type": "red或orange或blue或amber或green",
-          "label": "财务处罚或合同陷阱或权利限制或隐藏费用或安全条款",
-          "level": "高或中或低",
-          "title": "问题的简短总结",
-          "desc": "详细的法律分析与风险说明",
-          "suggest": "具体的修改建议"
+          "text": "需要高亮的问题词句",
+          "type": "red",
+          "label": "财务处罚",
+          "level": "高",
+          "title": "违约金比例违法",
+          "desc": "详细法律分析...",
+          "suggest": "具体修改建议..."
         }
       ]
     }
   ]
 }
 
-颜色分类规则：
-- red(红色)：涉及违法条款、霸王条款、严重损害合法权益
-- orange(橙色)：隐藏的陷阱条款、不公平约定
-- blue(蓝色)：限制或剥夺合法权利
-- amber(琥珀色)：隐藏费用、不合理扣款、经济处罚
-- green(绿色)：安全条款相关风险
+## 必须遵守的规则
+
+1. text 字段：必须从原文中逐字复制，不得修改任何字符
+2. annotations.text：必须是 text 字段中出现的连续文字，不得改写
+3. 每个 annotation 的 7 个字段（text, type, label, level, title, desc, suggest）缺一不可
+4. 无问题的条款：annotations 为空数组 []
+5. 返回纯 JSON，不要用 \`\`\`json 包裹
+
+## 风险等级判定
+
+- 高：违法条款（违反劳动法/合同法/民法典）、霸王条款
+- 中：不公平约定、隐藏陷阱、不合理限制权利
+- 低：微小争议点、格式瑕疵、措辞不够友好
+
+## 颜色分类
+
+- red：违法、霸王条款、严重损害权益
+- orange：隐藏陷阱、不公平约定
+- blue：限制/剥夺合法权利
+- amber：隐藏费用、不合理扣款
+- green：安全条款风险
+
+## 示例
+
+输入："乙方提前退租须支付月租金200%作为违约金。"
+正确输出：
+{
+  "title": "房屋租赁合同",
+  "score": 75,
+  "clauses": [{
+    "num": 1,
+    "text": "乙方提前退租须支付月租金200%作为违约金。",
+    "annotations": [{
+      "text": "月租金200%",
+      "type": "red",
+      "label": "财务处罚",
+      "level": "高",
+      "title": "违约金比例违法",
+      "desc": "200%月租金违约金远超法律合理范围。根据民法典第585条，违约金过高的可予以减少。",
+      "suggest": "建议修改为不超过1个月租金，或改为实际损失的30%。"
+    }]
+  }]
+}
 
 合同类型：${type || '未指定'}
 合同内容：
@@ -68,7 +108,7 @@ ${text}`;
           { role: 'user', content: prompt },
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.3,
+        temperature: 0,
         max_tokens: 8192,
       }),
     });
