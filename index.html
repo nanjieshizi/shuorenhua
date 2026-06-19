@@ -811,7 +811,7 @@
       font-family: inherit; font-size: 14px;
     }
 
-    .modal-submit {
+    .modal-submit { margin-top: 20px;
       width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
       padding: 16px 32px; border: none; border-radius: 12px;
       background: var(--slate-900); color: #fff; font-size: 16px; font-weight: 600;
@@ -829,6 +829,12 @@
     .ai-progress { display: none; margin-top: 12px; }
     .ai-progress.active { display: block; }
     .ai-bar { width: 0%; height: 4px; border-radius: 2px; background: var(--red-p); transition: width 0.3s ease; }
+    .reoverlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+    .reoverlay.active { display: flex; }
+    .reocard { text-align: center; padding: 40px 48px; background: #fff; border-radius: 20px; border: 1px solid var(--slate-200); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+    .reospin { width: 32px; height: 32px; margin: 0 auto 8px; border: 3px solid var(--slate-200); border-top-color: var(--red-p); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #reLabel { font-size: 14px; color: var(--slate-500); margin-top: 12px; }
 
     .modal-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .modal-footer .free-count { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-400); }
@@ -1201,6 +1207,14 @@
     .results-actions button svg { width: 16px; height: 16px; }
     .results-actions .btn-p { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
     .results-actions .btn-p:hover { background: var(--slate-700); border-color: var(--slate-700); color: #fff; box-shadow: 0 6px 20px rgba(15,23,42,0.18); }
+    .export-wrap { position: relative; }
+    .btn-export { display: inline-flex; align-items: center; gap: 6px; padding: 13px 28px; border-radius: 12px; border: 1px solid var(--slate-200); background: #fff; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--slate-600); cursor: pointer; transition: all 0.3s ease; }
+    .btn-export:hover { border-color: var(--red-p); color: var(--red-p); box-shadow: 0 4px 14px rgba(220,38,38,0.06); transform: translateY(-1px); }
+    .btn-export svg { width: 16px; height: 16px; }
+    .export-menu { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; background: #fff; border: 1px solid var(--slate-200); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); overflow: hidden; z-index: 10; }
+    .export-menu.show { display: block; }
+    .export-menu button { display: block; width: 100%; padding: 10px 24px; border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--slate-600); cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    .export-menu button:hover { background: var(--slate-50); color: var(--slate-900); }
 
     /* Pagination */
     .pagination-bar {
@@ -1339,6 +1353,8 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -1396,7 +1412,6 @@
       <div class="modal-tabs"><button class="active" onclick="switchInputTab('paste')"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2H11L13 4V13C13 13.5523 12.5523 14 12 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2Z" stroke="currentColor" stroke-width="1.3"/></svg>粘贴文本</button><button onclick="switchInputTab('upload')"><svg viewBox="0 0 16 16" fill="none"><path d="M8 11V3M4 7L8 3L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>上传文件</button></div>
       <div class="modal-panel active" id="panel-paste"><div class="ta-wrap"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea><button class="ta-clear" onclick="clearTextarea()" title="清空内容"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
       <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持JPG/PNG/PDF</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
-      <div class="modal-type"><label>合同类型</label><select id="contract-type"><option value="租房合同">租房合同</option><option value="贷款协议">贷款协议</option><option value="保险合同">保险合同</option><option value="劳动协议">劳动协议</option><option value="用户协议">用户协议</option><option value="其他">其他</option></select></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button><div class="ai-progress" id="aiProgress"><div class="ai-bar" id="aiBar"></div></div>
       <div class="modal-footer"><div class="free-count"><span class="dot"></span>今日免费<span>1</span>次 · $3/次 · $8/月</div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
     </div>
@@ -1464,14 +1479,15 @@
       <div class="fs-pages" id="fsPages"></div>
       <div class="fs-right" id="fsRight"><div class="cr-header">风险标注</div></div>
     </div>
-    <div class="results-actions fade-target"><button onclick="copyResults()"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2H11L13 4V13C13 13.5523 12.5523 14 12 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2Z" stroke="currentColor" stroke-width="1.3"/></svg>复制结果</button><button onclick="resetAnalysis()"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>重新分析</button><button class="btn-p" onclick="newAnalysis()"><svg viewBox="0 0 16 16" fill="none"><path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>再来一份</button></div>
+    <div class="reoverlay" id="reOverlay"><div class="reocard"><div class="reospin"></div><div class="ai-bar" id="reBar" style="max-width:280px;margin:16px auto 0"></div><p id="reLabel">重新分析中...</p></div></div>
+    <div class="results-actions fade-target"><button onclick="resetAnalysis()"><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 7.5A5.5 5.5 0 0 1 12.8 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M13.5 8.5A5.5 5.5 0 0 1 3.2 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><polygon points="12.5,1.5 12.5,5.5 8.5,3.5" fill="currentColor"/><polygon points="3.5,14.5 3.5,10.5 7.5,12.5" fill="currentColor"/></svg>重新分析</button><button class="btn-p" onclick="newAnalysis()"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5.5v3M6.5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>再来一份</button><div class="export-wrap" id="exportWrap"><button class="btn-export" onclick="event.stopPropagation();toggleExport()"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12v1.5c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>导出</button><div class="export-menu" id="exportMenu"><button onclick="event.stopPropagation();exportPDF()">导出 PDF</button></div></div></div>
   </section>
   </div>
 
   <div class="page page-history" id="page-history">
   <section class="history-section" id="history-section">
     <h2 class="section-title">分析历史</h2><p class="section-sub">查看过往的合同分析记录</p>
-    <div class="history-toolbar"><div class="search-wrap"><svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/></svg><input type="text" placeholder="搜索历史记录..." id="historySearch" oninput="filterHistory()"/></div><div class="history-filters" id="historyFilters"><button class="active" onclick="filterByType('all')">全部</button><button onclick="filterByType('租房合同')">租房</button><button onclick="filterByType('贷款协议')">贷款</button><button onclick="filterByType('保险合同')">保险</button><button onclick="filterByType('劳动协议')">劳动</button><button onclick="filterByType('用户协议')">用户</button></div></div>
+    <div class="history-toolbar"><div class="search-wrap"><svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/></svg><input type="text" placeholder="搜索历史记录..." id="historySearch" oninput="filterHistory()"/></div><div class="history-filters" id="historyFilters"><button class="active" onclick="filterByType('all')">全部</button></div></div>
     <div class="history-list" id="historyList"></div>
     <div class="history-empty" id="historyEmpty"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="12" width="48" height="44" rx="4" stroke="currentColor" stroke-width="2"/></svg><h3>还没有分析记录</h3><p>完成一份合同分析后，记录将自动保存在这里</p><button onclick="openModal()">开始翻译</button></div>
   </section>
@@ -1531,7 +1547,8 @@
     function closeModal() { var o = document.getElementById('modalOverlay'); o.classList.add('closing'); setTimeout(function() { o.classList.remove('visible','closing'); document.body.style.overflow = ''; }, 250); }
     function closeOnBackdrop(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
-    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: JSON.parse(localStorage.getItem('contractHistory') || '[]') };
+    var _hist = JSON.parse(localStorage.getItem('contractHistory') || '[]'); _hist.sort(function(a,b){return b.id-a.id;});
+    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist };
 
     function clearTextarea() { document.getElementById('contract-input').value = ''; }
     function clearFile() {
@@ -1669,7 +1686,7 @@
       var aiProg = document.getElementById('aiProgress'), aiBar = document.getElementById('aiBar');
       aiProg.classList.add('active'); aiBar.style.width = '0%';
       var progTimer = setInterval(function() { var w = parseFloat(aiBar.style.width) || 0; if (w < 85) aiBar.style.width = (w + Math.random() * 8) + '%'; }, 400);
-      var type = document.getElementById('contract-type').value;
+      var type = '';
       AppState.currentContractType = type;
 
       var text = document.getElementById('contract-input').value.trim();
@@ -1749,6 +1766,9 @@
       document.getElementById('statMed').textContent = med;
       document.getElementById('statLow').textContent = low;
 
+      // 根据实际标注数据计算评分，而非 AI 任意给分
+      results.score = Math.min(95, 10 + high * 15 + med * 8 + low * 3);
+
       var totalAnnot = high + med + low;
       var totalTypes = red + orange + blue + amber + green || 1;
       function pct(n) { return totalAnnot ? Math.round(n / totalAnnot * 100) + '%' : '0%'; }
@@ -1767,7 +1787,7 @@
 
       animateScore(results.score);
       renderCompareView(displayClauses);
-      saveToHistory(typeName, results.score, high, med, low, results.clauses.length);
+      if (AppState.originalText) saveToHistory(typeName, results.score, high, med, low, displayClauses.length, displayClauses);
       setTimeout(alignAnnotations, 200);
     }
 
@@ -2104,33 +2124,134 @@
       }, 100);
     }
 
+    function toggleExport() { document.getElementById('exportMenu').classList.toggle('show'); }
+    document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
+
+    function buildExportDoc() {
+      var title = document.getElementById('result-type').textContent;
+      var date = document.getElementById('result-date').textContent;
+      var score = document.getElementById('scoreNum').textContent;
+      var clauses = allClausesRef || [];
+      var doc = '<style>*{margin:0;padding:0;box-sizing:border-box;font-family:"Noto Serif SC","Noto Sans SC",serif}';
+      doc += 'h1{font-size:22px;margin-bottom:6px;color:#0f172a}.meta{color:#94a3b8;font-size:12px;margin-bottom:28px}';
+      doc += '.clause{margin-bottom:20px;padding:10px 0;border-bottom:1px solid #f1f5f9}';
+      doc += '.clause-text{text-align:justify;font-size:14px;line-height:2.2;color:#334155}';
+      doc += '.hl{font-weight:700;padding:0 2px;border-radius:2px}';
+      doc += '.hl-r{color:#991B1B;background:rgba(239,68,68,.15)}';
+      doc += '.hl-o{color:#9A3412;background:rgba(249,115,22,.15)}';
+      doc += '.hl-b{color:#1E40AF;background:rgba(59,130,246,.12)}';
+      doc += '.hl-a{color:#92400E;background:rgba(245,158,11,.15)}';
+      doc += '.hl-g{color:#065F46;background:rgba(16,185,129,.12)}';
+      doc += '.annot{margin:8px 0 8px 16px;padding:10px 14px;background:#f8fafc;border-left:3px solid #e2e8f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.8}';
+      doc += '.annot.red{border-left-color:#EF4444}.annot.orange{border-left-color:#F97316}.annot.blue{border-left-color:#3B82F6}.annot.amber{border-left-color:#F59E0B}.annot.green{border-left-color:#10B981}';
+      doc += '.suggest{margin-top:6px;color:#64748b;font-size:12px}</style>';
+      doc += '<h1>' + title + ' · 风险分析报告</h1>';
+      doc += '<div class="meta">分析日期：' + date + ' | 风险评分：' + score + ' 分 | 共 ' + clauses.length + ' 条条款</div>';
+      clauses.forEach(function(c) {
+        var txt = (c.text || '').replace(/\n/g, '<br>');
+        if (c.annotations) c.annotations.forEach(function(a) {
+          txt = txt.replace(a.text, '<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
+        });
+        doc += '<div class="clause"><div class="clause-text">' + txt + '</div>';
+        if (c.annotations) c.annotations.forEach(function(a) {
+          doc += '<div class="annot ' + (a.type||'red') + '"><strong>' + a.label + ' · ' + a.level + '风险：' + a.title + '</strong><br>' + a.desc + '<div class="suggest">建议：' + a.suggest + '</div></div>';
+        });
+        doc += '</div>';
+      });
+      return doc;
+    }
+
+    function exportImage() {
+      document.getElementById('exportMenu').classList.remove('show');
+      var el = document.getElementById('results-section');
+      html2canvas(el, { scale: 2, backgroundColor: '#f8fafc', useCORS: true }).then(function(canvas) {
+        var link = document.createElement('a'); link.download = '合同分析报告.png'; link.href = canvas.toDataURL(); link.click();
+      });
+    }
+
+    async function exportPDF() {
+      document.getElementById('exportMenu').classList.remove('show');
+      try {
+        var container = document.createElement('div');
+        container.innerHTML = buildExportDoc();
+        container.style.cssText = 'position:fixed;top:0;left:0;width:800px;padding:50px 40px;background:#fff;z-index:99999;overflow:visible';
+        document.body.appendChild(container);
+        await new Promise(function(r) { setTimeout(r, 500); });
+        var canvas = await html2canvas(container, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false, allowTaint: true });
+        document.body.removeChild(container);
+        var JsPDF = window.jspdf.jsPDF;
+        var pdf = new JsPDF('p', 'mm', 'a4');
+        var pw = pdf.internal.pageSize.getWidth() - 20;
+        var ph = pdf.internal.pageSize.getHeight() - 20;
+        var srcY = 0, page = 0;
+        while (srcY < canvas.height) {
+          if (page > 0) pdf.addPage();
+          var sliceH = Math.min(canvas.height - srcY, Math.floor(ph * canvas.width / pw));
+          var sc = document.createElement('canvas'); sc.width = canvas.width; sc.height = sliceH || 1;
+          sc.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+          pdf.addImage(sc.toDataURL('image/png'), 'PNG', 10, 10, pw, (sliceH || 1) * pw / canvas.width);
+          srcY += sliceH; page++;
+        }
+        pdf.save((document.getElementById('result-type').textContent || '合同') + '分析报告.pdf');
+      } catch(e) {
+        alert('导出失败: ' + e.message);
+      }
+    }
+
     function copyResults() {
       var text = document.getElementById('result-type').textContent + '风险评分：' + document.getElementById('scoreNum').textContent;
       navigator.clipboard.writeText(text).then(function() { alert('已复制到剪贴板'); }).catch(function() { alert('复制失败'); });
     }
 
-    function resetAnalysis() {
-      document.getElementById('results-section').classList.add('section-hidden');
-      navigateTo('home'); openModal();
+    async function resetAnalysis() {
+      var text = AppState.originalText;
+      if (!text && allClausesRef && allClausesRef.length) {
+        text = allClausesRef.map(function(c) { return c.text; }).join('\n\n');
+        AppState.originalText = text;
+      }
+      if (!text || text === '房屋租赁合同示例') { navigateTo('home'); openModal(); return; }
+      var overlay = document.getElementById('reOverlay'), bar = document.getElementById('reBar');
+      overlay.classList.add('active'); bar.style.width = '0%';
+      var progTimer = setInterval(function() { var w = parseFloat(bar.style.width) || 0; if (w < 85) bar.style.width = (w + Math.random() * 8) + '%'; }, 400);
+      try {
+        var response = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, type: '' }) });
+        clearInterval(progTimer); bar.style.width = '100%';
+        var data = await response.json();
+        if (data.error) throw new Error(data.error);
+        overlay.classList.remove('active');
+        showResults(data, '');
+      } catch(e) {
+        clearInterval(progTimer); overlay.classList.remove('active');
+        showResults(generateMockResults(''), '');
+      }
     }
 
     function newAnalysis() {
-      document.getElementById('results-section').classList.add('section-hidden');
-      document.getElementById('contract-input').value = '';
-      AppState.uploadedFile = null;
-      document.getElementById('fileConfirm').classList.remove('visible');
+      clearInput();
       navigateTo('home'); openModal();
     }
 
-    function saveToHistory(type, score, high, med, low, total) {
-      var record = { id: Date.now(), type: type, score: score, high: high, med: med, low: low, total: total, date: new Date().toISOString().slice(0, 10) };
+    function saveToHistory(type, score, high, med, low, total, clauses) {
+      var now = new Date();
+      var dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+      var record = { id: Date.now(), type: type, score: score, high: high, med: med, low: low, total: total, date: dateStr, clauses: clauses };
       AppState.history.unshift(record);
+      AppState.history.sort(function(a, b) { return b.id - a.id; });
       localStorage.setItem('contractHistory', JSON.stringify(AppState.history));
       renderHistory(AppState.history);
     }
 
     function renderHistory(records) {
       var list = document.getElementById('historyList'), empty = document.getElementById('historyEmpty');
+      // 动态生成分类标签（始终从全量历史中提取类型）
+      var filterDiv = document.getElementById('historyFilters');
+      var types = []; AppState.history.forEach(function(r) { if (types.indexOf(r.type) === -1) types.push(r.type); });
+      var curActive = AppState._filterType || 'all';
+      filterDiv.innerHTML = '<button class="' + (curActive === 'all' ? 'active' : '') + '" onclick="filterByType(\'all\')">全部</button>' + types.map(function(t) {
+        return '<button class="' + (curActive === t ? 'active' : '') + '" onclick="filterByType(\'' + t.replace(/'/g, "\\'") + '\')">' + t.replace('合同','').replace('协议','') + '</button>';
+      }).join('');
+      filterDiv.style.overflowX = types.length > 4 ? 'auto' : '';
+      filterDiv.style.flexWrap = types.length > 4 ? 'nowrap' : '';
       if (!records.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
       empty.style.display = 'none';
       var hsvg = {
@@ -2149,8 +2270,6 @@
     }
 
     function filterByType(type) {
-      document.querySelectorAll('#historyFilters button').forEach(function(b) { b.classList.remove('active'); });
-      event.target.classList.add('active');
       AppState._filterType = type;
       applyFilters();
     }
@@ -2166,9 +2285,14 @@
     function viewHistory(id) {
       var record = AppState.history.find(function(r) { return r.id === id; });
       if (!record) return;
-      var results = generateMockResults(record.type);
-      results.score = record.score;
-      showResults(results, record.type);
+      AppState.originalText = '';
+      if (record.clauses) {
+        showResults({ title: record.type, score: record.score, clauses: record.clauses }, record.type);
+      } else {
+        var results = generateMockResults(record.type);
+        results.score = record.score;
+        showResults(results, record.type);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() { renderHistory(AppState.history); });
