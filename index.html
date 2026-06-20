@@ -1454,7 +1454,6 @@
         <div class="stat-card"><span class="sc-num" style="color:#EF4444" id="statHigh">0</span><span class="sc-label">高风险</span></div>
         <div class="stat-card"><span class="sc-num" style="color:#F97316" id="statMed">0</span><span class="sc-label">中风险</span></div>
         <div class="stat-card"><span class="sc-num" style="color:#10B981" id="statLow">0</span><span class="sc-label">低风险</span></div>
-        <div class="stat-card"><span class="sc-num" style="color:var(--slate-800)" id="statTotal">0</span><span class="sc-label">总风险条款</span></div>
       </div>
     </div>
     <div class="compare-section-header fade-target"><div class="compare-section-label">合同条款逐条分析</div><div class="compare-filters" id="riskFilters"><button onclick="filterByRisk('all')" class="active">全部</button><button onclick="filterByRisk('高')">高风险</button><button onclick="filterByRisk('中')">中风险</button><button onclick="filterByRisk('低')">低风险</button></div><button class="fs-toggle" onclick="toggleFullscreen()"><svg viewBox="0 0 16 16" fill="none"><path d="M2 6V2H6M10 2H14V6M14 10V14H10M6 14H2V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>全屏</button></div>
@@ -1786,9 +1785,6 @@
       document.getElementById('pctBlue').textContent = pctType(blue);
       document.getElementById('pctAmber').textContent = pctType(amber);
       document.getElementById('pctLow').textContent = pctType(green);
-      setTimeout(function() {
-        document.getElementById('statTotal').textContent = document.querySelectorAll('#compareRight .annot-card').length || (high + med + low);
-      }, 300);
 
       animateScore(results.score);
       renderCompareView(displayClauses);
