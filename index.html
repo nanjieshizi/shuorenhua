@@ -1786,7 +1786,9 @@
       document.getElementById('pctBlue').textContent = pctType(blue);
       document.getElementById('pctAmber').textContent = pctType(amber);
       document.getElementById('pctLow').textContent = pctType(green);
-      document.getElementById('statTotal').textContent = high + med + low;
+      setTimeout(function() {
+        document.getElementById('statTotal').textContent = document.querySelectorAll('#compareRight .annot-card').length || (high + med + low);
+      }, 300);
 
       animateScore(results.score);
       renderCompareView(displayClauses);
