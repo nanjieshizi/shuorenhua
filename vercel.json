@@ -1,7 +1,7 @@
 {
+  "framework": null,
   "buildCommand": "",
   "outputDirectory": ".",
-  "installCommand": "",
   "functions": {
     "api/analyze.js": {
       "maxDuration": 60
