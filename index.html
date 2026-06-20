@@ -1791,6 +1791,7 @@
       renderCompareView(displayClauses);
       if (AppState.originalText) saveToHistory(typeName, results.score, high, med, low, displayClauses.length, displayClauses);
       setTimeout(alignAnnotations, 200);
+      if (window.innerWidth < 900) setTimeout(function() { document.getElementById('compareRight').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
     }
 
     function animateScore(target) {
