@@ -2312,7 +2312,7 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderHistory(AppState.history); });
     if (AppState.history.length) renderHistory(AppState.history);
-    (function(){var g=[document.getElementById('fg1'),document.getElementById('fg2')];var f=document.getElementById('focusFrame');if(!g[0]||!g[1])return;var i=0,t=null;function s(){var tg=g[i],ot=g[(i+1)%2];ot.style.filter='blur(4px)';ot.style.opacity='.5';tg.style.filter='';tg.style.opacity='';var r=tg.getBoundingClientRect();f.style.left=r.left+'px';f.style.top=r.top+'px';f.style.width=r.width+'px';f.style.height=r.height+'px';f.classList.add('active');i=(i+1)%2}t=setInterval(s,2000);s()})();
+    (function(){var g=[document.getElementById('fg1'),document.getElementById('fg2')];var f=document.getElementById('focusFrame');if(!g[0]||!g[1])return;var i=0;function s(){var tg=g[i],ot=g[(i+1)%2];ot.style.filter='blur(4px)';ot.style.opacity='.5';tg.style.filter='';tg.style.opacity='';var r=tg.getBoundingClientRect();f.style.left=(r.left-4)+'px';f.style.top=(r.top-4)+'px';f.style.width=(r.width+8)+'px';f.style.height=(r.height+8)+'px';f.classList.add('active');i=(i+1)%2}setInterval(s,2000);s()})();
     console.log('shuorenhua loaded');
   </script>
 </body>
