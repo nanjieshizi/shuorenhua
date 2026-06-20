@@ -1354,6 +1354,7 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>.focus-container{position:relative;display:flex;gap:.15em;justify-content:flex-start;align-items:center;flex-wrap:wrap;outline:none;user-select:none}.focus-word{position:relative;font-size:inherit;font-weight:inherit;cursor:default;transition:filter .3s ease,color .3s ease;outline:none}.focus-word.dimmed{filter:blur(4px);opacity:.5}.focus-frame{position:absolute;top:0;left:0;pointer-events:none;box-sizing:content-box;z-index:1}.focus-frame .corner{position:absolute;width:.7rem;height:.7rem;border:2px solid var(--red-p);border-radius:2px;opacity:0;transition:opacity .3s ease}.focus-frame.active .corner{opacity:1}.corner.tl{top:-8px;left:-8px;border-right:none;border-bottom:none}.corner.tr{top:-8px;right:-8px;border-left:none;border-bottom:none}.corner.bl{bottom:-8px;left:-8px;border-right:none;border-top:none}.corner.br{bottom:-8px;right:-8px;border-left:none;border-top:none}</style>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -1378,7 +1379,7 @@
   <section class="hero">
     <div class="hero-left">
       <div class="hero-badge"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1L9.78 5.07L14 5.62L10.84 8.65L11.56 13L8 10.95L4.44 13L5.16 8.65L2 5.62L6.22 5.07L8 1Z" fill="currentColor"/></svg>AI 驱动 · 合同条款翻译</div>
-      <h1 class="hero-title"><span style="display:block;white-space:nowrap">把合同<span class="hl-red">「翻译」</span></span><span style="display:block">成<span class="hl-red">人话</span></span></h1>
+      <h1 class="hero-title"><div class="focus-container" id="focusTitle"><span class="focus-word">把</span><span class="focus-word">合</span><span class="focus-word">同</span><span class="focus-word hl-red">「</span><span class="focus-word hl-red">翻</span><span class="focus-word hl-red">译</span><span class="focus-word hl-red">」</span><span class="focus-word" style="width:100%;height:0"></span><span class="focus-word">成</span><span class="focus-word hl-red">人</span><span class="focus-word hl-red">话</span><div class="focus-frame"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div></div></h1>
       <p class="hero-sub">AI 自动标出风险条款、违约金陷阱、自动续费套路。<br/>拍照或粘贴合同，一分钟看懂再签。</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="openModal()">上传合同<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
@@ -2311,6 +2312,7 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderHistory(AppState.history); });
     if (AppState.history.length) renderHistory(AppState.history);
+    (function(){var c=document.getElementById('focusTitle');if(!c)return;var w=c.querySelectorAll('.focus-word');var f=c.querySelector('.focus-frame');var t=null;function r(){w.forEach(function(x){x.classList.add('dimmed')});f.classList.remove('active')}c.addEventListener('mouseenter',function(e){var x=e.target.closest('.focus-word');if(!x)return;w.forEach(function(y){y.classList.add('dimmed')});x.classList.remove('dimmed');f.classList.add('active');var r=x.getBoundingClientRect(),p=c.getBoundingClientRect();f.style.left=(r.left-p.left)+'px';f.style.top=(r.top-p.top)+'px';f.style.width=r.width+'px';f.style.height=r.height+'px'});c.addEventListener('mouseleave',r);c.addEventListener('touchstart',function(e){var x=e.target.closest('.focus-word');if(!x)return;w.forEach(function(y){y.classList.add('dimmed')});x.classList.remove('dimmed');f.classList.add('active');var r=x.getBoundingClientRect(),p=c.getBoundingClientRect();f.style.left=(r.left-p.left)+'px';f.style.top=(r.top-p.top)+'px';f.style.width=r.width+'px';f.style.height=r.height+'px'})})();
     console.log('shuorenhua loaded');
   </script>
 </body>
