@@ -926,8 +926,9 @@
     .score-ring .arc-circle.arc-low { stroke: #10B981; }
 
     .dash-dist { flex: 1; min-width: 0; }
+    .dist-summary { font-size: 14px; font-weight: 600; color: var(--slate-700); margin-bottom: 8px; line-height: 1.5; }
     .dash-dist .dist-title {
-      font-size: 13px; font-weight: 600; color: var(--slate-500); margin-bottom: 14px;
+      font-size: 12px; font-weight: 500; color: var(--slate-400); margin-bottom: 12px;
       letter-spacing: 0.02em;
     }
     .dist-bar .bar-track {
@@ -1431,6 +1432,7 @@
           <div class="score-num"><span class="sc-big" id="scoreNum">0</span><span class="sc-sub">风险评分</span></div>
         </div>
         <div class="dash-dist">
+          <div class="dist-summary" id="distSummary">这份合同风险较大，需要仔细排查</div>
           <div class="dist-title">风险分布</div>
           <div class="dist-bar">
             <div class="bar-track" id="barTrack">
@@ -1767,6 +1769,16 @@
       document.getElementById('statHigh').textContent = high;
       document.getElementById('statMed').textContent = med;
       document.getElementById('statLow').textContent = low;
+      var msgs = [
+        { max: 30, text: '这份合同整体表现良好，风险较低。' },
+        { max: 55, text: '这份合同存在少量风险点，建议留意标注条款。' },
+        { max: 75, text: '这份合同存在较多风险，建议逐条仔细核实。' },
+        { max: 90, text: '这份合同风险较大，需要仔细排查。' },
+        { max: 100, text: '这份合同风险极高，强烈建议咨询专业律师！' }
+      ];
+      var s = results.score || 0;
+      for (var i = 0; i < msgs.length; i++) { if (s <= msgs[i].max) { document.getElementById('distSummary').textContent = msgs[i].text; break; } }
+      if (s > 90) document.getElementById('distSummary').textContent = msgs[4].text;
 
       // 根据实际标注数据计算评分，而非 AI 任意给分
       results.score = Math.min(95, 10 + high * 15 + med * 8 + low * 3);
