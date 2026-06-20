@@ -1735,6 +1735,8 @@
       navigateTo('results');
       var section = document.getElementById('results-section');
       section.classList.remove('section-hidden');
+      section.style.display = '';
+      document.getElementById('page-results').style.display = '';
       var typeName = results.title || contractType;
       document.getElementById('result-type').textContent = typeName;
       document.getElementById('result-date').textContent = new Date().toISOString().slice(0, 10);
