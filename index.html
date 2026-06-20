@@ -1786,8 +1786,7 @@
       document.getElementById('pctBlue').textContent = pctType(blue);
       document.getElementById('pctAmber').textContent = pctType(amber);
       document.getElementById('pctLow').textContent = pctType(green);
-      var totalRisk = results.clauses.filter(function(c) { return c.annotations && c.annotations.length; }).length;
-      document.getElementById('statTotal').textContent = totalRisk || high + med + low;
+      document.getElementById('statTotal').textContent = high + med + low;
 
       animateScore(results.score);
       renderCompareView(displayClauses);
