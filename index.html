@@ -1615,18 +1615,39 @@
             }
             AppState.uploadedText = full.trim();
           } else if (file.type.indexOf('image/') === 0) {
-            var fd = new FormData();
-            fd.append('file', new Blob([buf], { type: file.type }), file.name);
-            fd.append('language', 'chs');
-            fd.append('isOverlayRequired', 'false');
-            var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
-            var ocrData = await ocrRes.json();
-            bar.style.width = '100%'; label.textContent = '识别中 100%';
-            if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
-              AppState.uploadedText = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
-            } else {
-              AppState.uploadedText = '[OCR识别失败: ' + file.name + ']';
+            var txt = '';
+            try {
+              // 主方案：OCR.space 云端识别
+              var fd = new FormData();
+              fd.append('file', new Blob([buf], { type: file.type }), file.name);
+              fd.append('language', 'chs');
+              fd.append('isOverlayRequired', 'false');
+              var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
+              var ocrData = await ocrRes.json();
+              if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
+                txt = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
+              }
+            } catch(e) {}
+            // 兜底：OCR.space 失败时用 Tesseract 本地识别
+            if (!txt || txt.length < 10) {
+              var img = await new Promise(function(ok) { var i = new Image(); i.onload = function() { ok(i); }; i.src = URL.createObjectURL(new Blob([buf], { type: file.type })); });
+              var c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+              var ctx = c.getContext('2d'); ctx.filter = 'contrast(1.4) brightness(1.1)'; ctx.drawImage(img, 0, 0); ctx.filter = 'none';
+              var idata = ctx.getImageData(0, 0, c.width, c.height), d = idata.data, total = d.length / 4;
+              var hist = new Array(256).fill(0);
+              for (var j = 0; j < d.length; j += 4) { var g = Math.round(d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114); hist[g]++; }
+              var sum = 0; for (var k = 0; k < 256; k++) sum += k * hist[k];
+              var wB = 0, wF = 0, sB = 0, mB = 0, mF = 0, maxV = 0, thresh = 128;
+              for (var t = 0; t < 256; t++) { wB += hist[t]; if (wB === 0 || wB === total) continue; wF = total - wB; sB += t * hist[t]; mB = sB / wB; mF = (sum - sB) / wF; var v = wB * wF * (mB - mF) * (mB - mF); if (v > maxV) { maxV = v; thresh = t; } }
+              for (var j = 0; j < d.length; j += 4) { var bw = (d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114) > thresh ? 255 : 0; d[j] = d[j+1] = d[j+2] = bw; }
+              ctx.putImageData(idata, 0, 0);
+              var res = await Tesseract.recognize(c.toDataURL('image/png'), 'chi_sim', {
+                logger: function(m) { if (m.status === 'recognizing text') { var p = Math.round(m.progress*100); bar.style.width = p + '%'; label.textContent = '识别中 ' + p + '%'; } }
+              });
+              txt = res.data.text.trim();
             }
+            bar.style.width = '100%'; label.textContent = '识别中 100%';
+            AppState.uploadedText = txt || ('[OCR识别失败: ' + file.name + ']');
           } else {
             AppState.uploadedText = new TextDecoder().decode(buf);
           }
