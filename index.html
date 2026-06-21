@@ -94,29 +94,22 @@
       transition: var(--transition);
       position: relative;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0;
-      width: 0; height: 2px;
-      background: var(--red-p);
-      transition: var(--transition);
-      border-radius: 2px;
-    }
     .nav-links a:hover { color: var(--slate-900); }
-    .nav-links a:hover::after { width: 100%; }
 
     .btn-login {
-      padding: 8px 20px;
-      border-radius: 8px;
-      background: var(--slate-900);
-      color: #fff !important;
-      font-weight: 600 !important;
-      font-size: 13px !important;
-      transition: var(--transition);
+      padding: 8px 20px; border-radius: 8px;
+      background: var(--slate-200); color: var(--slate-400) !important;
+      font-weight: 600 !important; font-size: 13px !important;
+      cursor: not-allowed; position: relative;
     }
-    .btn-login:hover { background: var(--slate-700) !important; transform: translateY(-1px); }
-    .btn-login::after { display: none !important; }
+    .btn-login:hover { background: var(--slate-200) !important; transform: none; }
+    .btn-login .login-tip {
+      display: none; position: absolute; top: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); background: #1e293b; color: #fff;
+      font-size: 11px; font-weight: 400; padding: 5px 10px; border-radius: 5px;
+      white-space: nowrap; pointer-events: none; z-index: 999;
+    }
+    .btn-login:hover .login-tip { display: block; }
 
     /* =====================================
        Hero
@@ -1372,7 +1365,7 @@
     <div class="nav-links">
       <a href="#" onclick="navigateTo('results');return false">分析报告</a>
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
-      <a href="#" class="btn-login">登录</a>
+      <a href="#" class="btn-login">登录<span class="login-tip">功能暂未上线</span></a>
     </div>
   </nav>
 
