@@ -1617,15 +1617,17 @@
             }
             AppState.uploadedText = full.trim();
           } else if (file.type.indexOf('image/') === 0) {
-            // 图片预处理：增强对比度，提升 OCR 识别率
+            // 图片预处理：增强对比度 + 自适应二值化，大幅提升 OCR 识别率
             var img = await new Promise(function(ok) { var i = new Image(); i.onload = function() { ok(i); }; i.src = URL.createObjectURL(new Blob([buf], { type: file.type })); });
-            var c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
-            var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0);
+            var scale = Math.min(2000 / img.width, 2000 / img.height, 2);
+            var c = document.createElement('canvas'); c.width = img.width * scale; c.height = img.height * scale;
+            var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, c.width, c.height);
             var idata = ctx.getImageData(0, 0, c.width, c.height), d = idata.data;
             for (var j = 0; j < d.length; j += 4) {
               var gray = d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114;
-              gray = (gray - 100) * 1.8; if (gray < 0) gray = 0; if (gray > 255) gray = 255;
-              d[j] = d[j+1] = d[j+2] = gray;
+              var thresh = 128;
+              var bw = gray > thresh ? 255 : 0;
+              d[j] = d[j+1] = d[j+2] = bw;
             }
             ctx.putImageData(idata, 0, 0);
             var processedUrl = c.toDataURL('image/png');
