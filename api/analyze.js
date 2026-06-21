@@ -111,7 +111,7 @@ ${text}`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-reasoner',
+        model: 'deepseek-chat',
         messages: [
           { role: 'system', content: '你是一位合同审查专家。你必须只返回合法的纯 JSON，不要包含任何 Markdown、解释或额外文字。' },
           { role: 'user', content: prompt },
@@ -136,9 +136,10 @@ ${text}`;
     try {
       result = JSON.parse(content);
     } catch {
-      // 如果 AI 包裹了 ```json 标记，尝试提取
-      const cleaned = content.replace(/```json\s*|```\s*/g, '').trim();
-      result = JSON.parse(cleaned);
+      // 提取第一个完整 JSON 对象
+      const m = content.match(/\{[\s\S]*\}/);
+      if (m) result = JSON.parse(m[0]);
+      else throw new Error('无法解析AI返回的JSON');
     }
 
     return res.status(200).json(result);
