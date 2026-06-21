@@ -1615,24 +1615,20 @@
             }
             AppState.uploadedText = full.trim();
           } else if (file.type.indexOf('image/') === 0) {
-            // 图片预处理：Otsu 自适应二值化，大幅提升 OCR 识别率
-            var img = await new Promise(function(ok) { var i = new Image(); i.onload = function() { ok(i); }; i.src = URL.createObjectURL(new Blob([buf], { type: file.type })); });
-            var scale = Math.max(1, Math.min(1500 / img.width, 1500 / img.height));
-            var c = document.createElement('canvas'); c.width = img.width * scale; c.height = img.height * scale;
-            var ctx = c.getContext('2d'); ctx.filter = 'contrast(1.4) brightness(1.1)'; ctx.drawImage(img, 0, 0, c.width, c.height); ctx.filter = 'none';
-            var idata = ctx.getImageData(0, 0, c.width, c.height), d = idata.data, total = d.length / 4;
-            var hist = new Array(256).fill(0);
-            for (var j = 0; j < d.length; j += 4) { var g = Math.round(d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114); hist[g]++; }
-            var sum = 0; for (var k = 0; k < 256; k++) sum += k * hist[k];
-            var wB = 0, wF = 0, sB = 0, mB = 0, mF = 0, maxV = 0, thresh = 128;
-            for (var t = 0; t < 256; t++) { wB += hist[t]; if (wB === 0 || wB === total) continue; wF = total - wB; sB += t * hist[t]; mB = sB / wB; mF = (sum - sB) / wF; var v = wB * wF * (mB - mF) * (mB - mF); if (v > maxV) { maxV = v; thresh = t; } }
-            for (var j = 0; j < d.length; j += 4) { var bw = (d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114) > thresh ? 255 : 0; d[j] = d[j+1] = d[j+2] = bw; }
-            ctx.putImageData(idata, 0, 0);
-            var processedUrl = c.toDataURL('image/png');
-            var res = await Tesseract.recognize(processedUrl, 'chi_sim', {
-              logger: function(m) { if (m.status === 'recognizing text') { var p = Math.round(m.progress*100); bar.style.width = p + '%'; label.textContent = '识别中 ' + p + '%'; } }
-            });
-            AppState.uploadedText = res.data.text.trim();
+            // OCR.space 免费 API — 图片文字识别
+            var base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+            var fd = new FormData();
+            fd.append('base64Image', 'data:' + file.type + ';base64,' + base64);
+            fd.append('language', 'chs');
+            fd.append('isOverlayRequired', 'false');
+            var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
+            var ocrData = await ocrRes.json();
+            bar.style.width = '100%'; label.textContent = '识别中 100%';
+            if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
+              AppState.uploadedText = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
+            } else {
+              AppState.uploadedText = '[OCR识别失败: ' + file.name + ']';
+            }
           } else {
             AppState.uploadedText = new TextDecoder().decode(buf);
           }
