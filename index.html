@@ -1378,7 +1378,7 @@
       <p class="hero-sub">AI 自动标出风险条款、违约金陷阱、自动续费套路。<br/>拍照或粘贴合同，一分钟看懂再签。</p>
       <div class="hero-actions">
         <button class="btn-primary glare-hover" style="--gh-angle:120deg;--gh-rgba:rgba(255,255,255,0.15);--gh-duration:0.7s;--gh-size:300% 300%" onclick="openModal()">上传合同<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
-        <div class="hero-free"><span class="dot"></span>今日免费 <span>1</span> 次 · ¥3/次 · ¥8/月</div>
+        <div class="hero-free"><span class="dot"></span>每周免费 <span>5000</span> 字 · 周一重置</div>
       </div>
       <div class="hero-tags">
         <a><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 2L2 7V14H6V10H10V14H14V7L8 2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg> 租房合同</a>
@@ -1411,7 +1411,7 @@
       <div class="modal-panel active" id="panel-paste"><div class="ta-wrap"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea><button class="ta-clear" onclick="clearTextarea()" title="清空内容"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
       <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持 PDF、JPG、PNG</div><div class="up-warn">图片识别率较低，建议使用文本粘贴或 PDF 上传</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button><div class="ai-progress" id="aiProgress"><div class="ai-bar" id="aiBar"></div></div>
-      <div class="modal-footer"><div class="free-count"><span class="dot"></span>今日免费<span>1</span>次 · $3/次 · $8/月</div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
+      <div class="modal-footer"><div class="free-count"><span class="dot"></span>每周免费 <span>5000</span> 字 · 剩余 <span id="remainWords">5000</span> 字</div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
     </div>
   </div>
 
@@ -1539,12 +1539,17 @@
     var nav = document.getElementById('nav');
     window.addEventListener('scroll', function() { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 
-    function openModal() { var o = document.getElementById('modalOverlay'); o.classList.remove('closing'); o.classList.add('visible'); document.body.style.overflow = 'hidden'; }
+    function openModal() { var o = document.getElementById('modalOverlay'); o.classList.remove('closing'); o.classList.add('visible'); document.body.style.overflow = 'hidden'; updateRemainDisplay(); }
     function closeModal() { var o = document.getElementById('modalOverlay'); o.classList.add('closing'); setTimeout(function() { o.classList.remove('visible','closing'); document.body.style.overflow = ''; }, 250); }
     function closeOnBackdrop(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
     var _hist = JSON.parse(localStorage.getItem('contractHistory') || '[]'); _hist.sort(function(a,b){return b.id-a.id;});
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist };
+
+    function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
+    function getWeeklyUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('weeklyUsage') || '{}'); return d.week === k ? d.words : 0; }
+    function addWeeklyUsage(count) { var d = { week: getWeekKey(), words: getWeeklyUsage() + count }; localStorage.setItem('weeklyUsage', JSON.stringify(d)); return 5000 - d.words; }
+    function updateRemainDisplay() { var el = document.getElementById('remainWords'); if (el) el.textContent = Math.max(0, 5000 - getWeeklyUsage()); }
 
     function clearTextarea() { document.getElementById('contract-input').value = ''; }
     function clearFile() {
@@ -1711,6 +1716,14 @@
       if (!text) text = '房屋租赁合同示例';
       AppState.originalText = text;
 
+      // 字数限制检查
+      var wordCount = text.replace(/\s/g, '').length;
+      var used = getWeeklyUsage();
+      if (used + wordCount > 5000 && text !== '房屋租赁合同示例') {
+        alert('本周免费额度仅剩 ' + Math.max(0, 5000 - used) + ' 字，当前合同 ' + wordCount + ' 字。请精简内容或下周再试。');
+        btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return;
+      }
+
       try {
         var body = { text: text, type: type };
         if (isFile && AppState.uploadedFile.type.indexOf('image/') === 0) body.ocr = true;
@@ -1725,6 +1738,7 @@
         if (data.error) throw new Error(data.error);
         closeModal(); aiProg.classList.remove('active');
         clearInput();
+        addWeeklyUsage(wordCount);
         showResults(data, type);
       } catch (e) {
         clearInterval(progTimer); aiProg.classList.remove('active');
