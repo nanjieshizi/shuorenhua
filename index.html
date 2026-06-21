@@ -934,7 +934,6 @@
     .dist-bar .bar-track .seg.seg-orange { background: #7C3AED; }
     .dist-bar .bar-track .seg.seg-blue { background: #2563EB; }
     .dist-bar .bar-track .seg.seg-amber { background: #D97706; }
-    .dist-bar .bar-track .seg.seg-green { background: #0D9488; }
     .dist-bar .bar-labels {
       display: flex; flex-wrap: wrap; gap: 6px 18px;
       font-size: 12px; color: var(--slate-500);
@@ -1104,6 +1103,7 @@
     .c-clause .c-text {
       flex: 1; font-family: 'Noto Serif SC', serif; font-size: 14px; line-height: 2;
       color: var(--slate-700); text-align: justify;
+      overflow-wrap: break-word; word-break: break-all; white-space: pre-line;
       overflow-wrap: break-word; word-break: break-all;
       white-space: pre-line;
     }
@@ -1435,14 +1435,12 @@
               <div class="seg seg-orange" id="segMed"></div>
               <div class="seg seg-blue" id="segBlue"></div>
               <div class="seg seg-amber" id="segAmber"></div>
-              <div class="seg seg-green" id="segLow"></div>
             </div>
             <div class="bar-labels">
               <span class="dl-item"><span class="dl-dot" style="background:#E11D48"></span>财务处罚<span class="dl-pct" id="pctHigh">0%</span></span>
               <span class="dl-item"><span class="dl-dot" style="background:#7C3AED"></span>合同陷阱<span class="dl-pct" id="pctMed">0%</span></span>
               <span class="dl-item"><span class="dl-dot" style="background:#2563EB"></span>权利限制<span class="dl-pct" id="pctBlue">0%</span></span>
               <span class="dl-item"><span class="dl-dot" style="background:#D97706"></span>隐藏费用<span class="dl-pct" id="pctAmber">0%</span></span>
-              <span class="dl-item"><span class="dl-dot" style="background:#0D9488"></span>安全条款<span class="dl-pct" id="pctLow">0%</span></span>
             </div>
           </div>
         </div>
@@ -1450,10 +1448,10 @@
       <div class="dash-stats-row">
         <div class="stat-card"><span class="sc-num" style="color:#EF4444" id="statHigh">0</span><span class="sc-label">高风险</span></div>
         <div class="stat-card"><span class="sc-num" style="color:#F97316" id="statMed">0</span><span class="sc-label">中风险</span></div>
-        <div class="stat-card"><span class="sc-num" style="color:#10B981" id="statLow">0</span><span class="sc-label">低风险</span></div>
+        <div class="stat-card"><span class="sc-num" style="color:#D97706" id="statLow">0</span><span class="sc-label" style="color:#D97706">轻微风险</span></div>
       </div>
     </div>
-    <div class="compare-section-header fade-target"><div class="compare-section-label">合同条款逐条分析</div><div class="compare-filters" id="riskFilters"><button onclick="filterByRisk('all')" class="active">全部</button><button onclick="filterByRisk('高')">高风险</button><button onclick="filterByRisk('中')">中风险</button><button onclick="filterByRisk('低')">低风险</button></div><button class="fs-toggle" onclick="toggleFullscreen()"><svg viewBox="0 0 16 16" fill="none"><path d="M2 6V2H6M10 2H14V6M14 10V14H10M6 14H2V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>全屏</button></div>
+    <div class="compare-section-header fade-target"><div class="compare-section-label">合同条款逐条分析</div><div class="compare-filters" id="riskFilters"><button onclick="filterByRisk('all')" class="active">全部</button><button onclick="filterByRisk('高')">高风险</button><button onclick="filterByRisk('中')">中风险</button><button onclick="filterByRisk('轻微')">轻微风险</button></div><button class="fs-toggle" onclick="toggleFullscreen()"><svg viewBox="0 0 16 16" fill="none"><path d="M2 6V2H6M10 2H14V6M14 10V14H10M6 14H2V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>全屏</button></div>
     <div class="compare-view fade-target" id="compareView">
       <div class="compare-left" id="compareLeft">
         <div class="page-sheet" id="pageSheet">
@@ -1759,7 +1757,7 @@
       displayClauses.forEach(function(c) {
         if (c.annotations) c.annotations.forEach(function(a) {
           if (a.level === '高') { high++; if (a.type === 'red') red++; }
-          else if (a.level === '低') { low++; if (a.type === 'amber') amber++; else if (a.type === 'green') green++; }
+          else if (a.level === '轻微') { low++; if (a.type === 'amber') amber++; }
           else { med++; if (a.type === 'orange') orange++; else if (a.type === 'blue') blue++; }
         });
       });
@@ -1794,7 +1792,6 @@
       document.getElementById('pctMed').textContent = pctType(orange);
       document.getElementById('pctBlue').textContent = pctType(blue);
       document.getElementById('pctAmber').textContent = pctType(amber);
-      document.getElementById('pctLow').textContent = pctType(green);
 
       animateScore(results.score);
       renderCompareView(displayClauses);
@@ -1908,7 +1905,7 @@
           card.className = 'annot-card type-' + a.type;
           card.id = id;
           card.setAttribute('onclick', 'event.stopPropagation();clickCard(this)');
-          card.innerHTML = '<div class="ac-header"><span class="ac-seq">' + (pageSeq || '') + '</span><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '低' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
+          card.innerHTML = '<div class="ac-header"><span class="ac-seq">' + (pageSeq || '') + '</span><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '轻微' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
           right.appendChild(card);
         });
       });
@@ -2049,7 +2046,7 @@
             card.id = id;
             card.style.animationDelay = '0s';
             card.setAttribute('onclick', 'event.stopPropagation();clickCard(this)');
-            card.innerHTML = '<div class="ac-header"><span class="ac-seq">' + pageSeq + '</span><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '低' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
+            card.innerHTML = '<div class="ac-header"><span class="ac-seq">' + pageSeq + '</span><span class="ac-badge b-' + a.type + '">' + a.label + '</span><span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '轻微' ? 'low' : 'medium') + '">' + a.level + '风险</span></div><div class="ac-title">' + a.title + '</div><div class="ac-desc">' + a.desc + '</div><div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div><span class="ac-tip"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看建议</span>';
             right.appendChild(card);
           });
         }
