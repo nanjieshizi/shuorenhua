@@ -1753,7 +1753,7 @@
       if (!displayClauses.length) displayClauses = results.clauses;
 
       // 从实际显示的条款中统计标注数据
-      var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0, green = 0;
+      var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0;
       displayClauses.forEach(function(c) {
         if (c.annotations) c.annotations.forEach(function(a) {
           if (a.level === '高') { high++; if (a.type === 'red') red++; }
@@ -1780,14 +1780,13 @@
       results.score = Math.min(95, 10 + high * 15 + med * 8 + low * 3);
 
       var totalAnnot = high + med + low;
-      var totalTypes = red + orange + blue + amber + green || 1;
+      var totalTypes = red + orange + blue + amber || 1;
       function pct(n) { return totalAnnot ? Math.round(n / totalAnnot * 100) + '%' : '0%'; }
       function pctType(n) { return Math.round(n / totalTypes * 100) + '%'; }
       document.getElementById('segHigh').style.width = pctType(red);
       document.getElementById('segMed').style.width = pctType(orange);
       document.getElementById('segBlue').style.width = pctType(blue);
       document.getElementById('segAmber').style.width = pctType(amber);
-      document.getElementById('segLow').style.width = pctType(green);
       document.getElementById('pctHigh').textContent = pctType(red);
       document.getElementById('pctMed').textContent = pctType(orange);
       document.getElementById('pctBlue').textContent = pctType(blue);
