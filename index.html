@@ -1740,7 +1740,9 @@
       document.getElementById('result-clauses').textContent = '共' + results.clauses.length + '条条款';
 
       // 用原始文本替代 AI 分句，保留原文段落格式
-      var origParts = AppState.originalText.split('\n\n').filter(function(p) { return p.trim(); });
+      var rawText = AppState.originalText;
+      var origParts = rawText.split('\n\n').filter(function(p) { return p.trim(); });
+      if (origParts.length <= 1) origParts = rawText.split('\n').filter(function(p) { return p.trim(); });
       var allAnnots = [];
       results.clauses.forEach(function(c) { if (c.annotations) allAnnots = allAnnots.concat(c.annotations); });
       var displayClauses = origParts.map(function(para, i) {
@@ -1973,8 +1975,7 @@
           var id = 'aid-' + (getClauseAidBase(ci) + ai);
           var key = ci + '-' + ai;
           var seq = seqMap && seqMap[key] ? '<sup class="hl-seq">' + seqMap[key] + '</sup>' : '';
-          var safeText = a.text.replace(/\$/g, '$$$$');
-          text = text.split(a.text).join('<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + safeText + '</span>');
+          text = text.split(a.text).join('<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + a.text + '</span>');
         });
       }
       return '<div class="c-clause"><span class="c-num">' + c.num + '</span><span class="c-text">' + text + '</span></div>';
@@ -2163,8 +2164,7 @@
       clauses.forEach(function(c) {
         var txt = (c.text || '').replace(/\n/g, '<br>');
         if (c.annotations) c.annotations.forEach(function(a) {
-          var se = a.text.replace(/\$/g, '$$$$');
-          txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + se + '</span>');
+          txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
         });
         doc += '<div class="clause"><div class="clause-text">' + txt + '</div>';
         if (c.annotations) c.annotations.forEach(function(a) {
