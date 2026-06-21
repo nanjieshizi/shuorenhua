@@ -1615,10 +1615,8 @@
             }
             AppState.uploadedText = full.trim();
           } else if (file.type.indexOf('image/') === 0) {
-            // OCR.space 免费 API — 图片文字识别
-            var base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
             var fd = new FormData();
-            fd.append('base64Image', 'data:' + file.type + ';base64,' + base64);
+            fd.append('file', new Blob([buf], { type: file.type }), file.name);
             fd.append('language', 'chs');
             fd.append('isOverlayRequired', 'false');
             var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
