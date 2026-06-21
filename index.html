@@ -1416,7 +1416,7 @@
 
   <div class="page page-results section-hidden" id="page-results">
   <section class="results-section section-hidden" id="results-section">
-    <div class="fade-target report-header"><div class="report-title-row"><h2 class="section-title" id="result-title">合同风险分析报告</h2><span class="meta-badge" id="result-type">租房合同</span></div><div class="results-meta" id="results-meta"><span id="result-date">2026-06-15</span><span>·</span><span id="result-clauses">共5条条款</span></div></div>
+    <div class="fade-target report-header"><div class="report-title-row"><h2 class="section-title" id="result-title">合同风险分析报告</h2></div><div class="results-meta" id="results-meta"><span id="result-date">2026-06-15</span><span>·</span><span id="result-clauses">共5条条款</span></div></div>
     <div class="dashboard fade-target">
       <div class="dash-top">
         <div class="score-ring">
@@ -1734,7 +1734,8 @@
       section.style.display = '';
       document.getElementById('page-results').style.display = '';
       var typeName = results.title || contractType;
-      document.getElementById('result-type').textContent = typeName;
+      AppState.currentContractType = typeName;
+      document.getElementById('result-title').textContent = typeName + '风险分析报告';
       document.getElementById('result-date').textContent = new Date().toISOString().slice(0, 10);
       document.getElementById('result-clauses').textContent = '共' + results.clauses.length + '条条款';
 
@@ -2137,7 +2138,7 @@
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
 
     function buildExportDoc() {
-      var title = document.getElementById('result-type').textContent;
+      var title = AppState.currentContractType || '合同';
       var date = document.getElementById('result-date').textContent;
       var score = document.getElementById('scoreNum').textContent;
       var clauses = allClausesRef || [];
@@ -2201,14 +2202,14 @@
           pdf.addImage(sc.toDataURL('image/png'), 'PNG', 10, 10, pw, (sliceH || 1) * pw / canvas.width);
           srcY += sliceH; page++;
         }
-        pdf.save((document.getElementById('result-type').textContent || '合同') + '分析报告.pdf');
+        pdf.save((AppState.currentContractType || '合同') + '分析报告.pdf');
       } catch(e) {
         alert('导出失败: ' + e.message);
       }
     }
 
     function copyResults() {
-      var text = document.getElementById('result-type').textContent + '风险评分：' + document.getElementById('scoreNum').textContent;
+      var text = (AppState.currentContractType || '合同') + '风险评分：' + document.getElementById('scoreNum').textContent;
       navigator.clipboard.writeText(text).then(function() { alert('已复制到剪贴板'); }).catch(function() { alert('复制失败'); });
     }
 
