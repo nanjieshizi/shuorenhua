@@ -1973,7 +1973,8 @@
           var id = 'aid-' + (getClauseAidBase(ci) + ai);
           var key = ci + '-' + ai;
           var seq = seqMap && seqMap[key] ? '<sup class="hl-seq">' + seqMap[key] + '</sup>' : '';
-          text = text.replace(a.text, '<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + a.text + '</span>');
+          var safeText = a.text.replace(/\$/g, '$$$$');
+          text = text.split(a.text).join('<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + safeText + '</span>');
         });
       }
       return '<div class="c-clause"><span class="c-num">' + c.num + '</span><span class="c-text">' + text + '</span></div>';
@@ -2162,7 +2163,8 @@
       clauses.forEach(function(c) {
         var txt = (c.text || '').replace(/\n/g, '<br>');
         if (c.annotations) c.annotations.forEach(function(a) {
-          txt = txt.replace(a.text, '<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
+          var se = a.text.replace(/\$/g, '$$$$');
+          txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + se + '</span>');
         });
         doc += '<div class="clause"><div class="clause-text">' + txt + '</div>';
         if (c.annotations) c.annotations.forEach(function(a) {

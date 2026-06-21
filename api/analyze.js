@@ -111,7 +111,7 @@ ${text}`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-reasoner',
         messages: [
           { role: 'system', content: '你是一位合同审查专家。你必须只返回合法的纯 JSON，不要包含任何 Markdown、解释或额外文字。' },
           { role: 'user', content: prompt },
