@@ -1068,7 +1068,7 @@
       width: 4px; height: 4px; border-radius: 50%; background: var(--slate-300);
     }
     .page-body {
-      flex: 1; overflow: visible; min-height: 0;
+      flex: 1; overflow: hidden; min-height: 0;
     }
     .page-footer {
       flex-shrink: 0; text-align: center; padding-top: 8px;
@@ -1751,6 +1751,10 @@
         return clause;
       });
       if (!displayClauses.length) displayClauses = results.clauses;
+      // OCR/文件场景下标配匹配失败时兜底使用AI原始条款
+      var matchedCnt = 0;
+      displayClauses.forEach(function(c) { if (c.annotations) matchedCnt += c.annotations.length; });
+      if (allAnnots.length > 0 && matchedCnt === 0) displayClauses = results.clauses;
 
       // 从实际显示的条款中统计标注数据
       var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0;
