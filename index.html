@@ -1841,7 +1841,7 @@
       measure.style.cssText = 'position:absolute;visibility:hidden;width:' + measureBody.clientWidth + 'px;font-family:"Noto Serif SC",serif;font-size:14px;line-height:2;text-align:justify;top:0;left:0;pointer-events:none;';
       document.body.appendChild(measure);
       filtered.forEach(function(c) {
-        measure.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:16px;padding:10px 0;border-radius:8px"><span style="width:12px;font-size:11px;font-family:\'Noto Sans SC\',sans-serif;text-align:right;flex-shrink:0;color:#94a3b8">' + c.num + '</span><span style="flex:1;font-family:\'Noto Serif SC\',serif;font-size:14px;line-height:2;text-align:justify;color:#334155;overflow-wrap:break-word;word-break:break-all">' + c.text.replace(/\n/g, ' ') + '</span></div>';
+        measure.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:16px;padding:10px 0;border-radius:8px"><span style="width:12px;font-size:11px;font-family:\'Noto Sans SC\',sans-serif;text-align:right;flex-shrink:0;color:#94a3b8">' + c.num + '</span><span style="flex:1;font-family:\'Noto Serif SC\',serif;font-size:14px;line-height:2;text-align:justify;color:#334155;overflow-wrap:break-word;word-break:break-all;white-space:pre-line">' + c.text + '</span></div>';
         var h = measure.firstChild.offsetHeight;
         measure.innerHTML = '';
         if (cur.length > 0 && curH + h > contentH) { fsPages.push(cur); cur = []; curH = 0; }
@@ -1980,7 +1980,7 @@
       var body = document.getElementById('pageBody');
       if (!body) { paginatedPages = [clauses]; return; }
       var contentWidth = body.clientWidth;
-      var contentHeight = body.clientHeight - 40;
+      var contentHeight = body.clientHeight - 56;
       if (!contentWidth || !contentHeight) { paginatedPages = [clauses]; return; }
 
       var measure = document.createElement('div');
@@ -1989,7 +1989,7 @@
 
       var pages = [], cur = [], curH = 0;
       clauses.forEach(function(c) {
-        measure.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:16px;padding:10px 0;border-radius:8px"><span style="width:12px;font-size:11px;font-family:\'Noto Sans SC\',sans-serif;text-align:right;flex-shrink:0;color:#94a3b8">' + c.num + '</span><span style="flex:1;font-family:\'Noto Serif SC\',serif;font-size:14px;line-height:2;text-align:justify;color:#334155;overflow-wrap:break-word;word-break:break-all">' + c.text.replace(/\n/g, ' ') + '</span></div>';
+        measure.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:16px;padding:10px 0;border-radius:8px"><span style="width:12px;font-size:11px;font-family:\'Noto Sans SC\',sans-serif;text-align:right;flex-shrink:0;color:#94a3b8">' + c.num + '</span><span style="flex:1;font-family:\'Noto Serif SC\',serif;font-size:14px;line-height:2;text-align:justify;color:#334155;overflow-wrap:break-word;word-break:break-all;white-space:pre-line">' + c.text + '</span></div>';
         var h = measure.firstChild.offsetHeight;
         measure.innerHTML = '';
         if (cur.length > 0 && curH + h > contentHeight) { pages.push(cur); cur = []; curH = 0; }
