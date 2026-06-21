@@ -214,6 +214,7 @@
       flex-wrap: wrap;
       animation: fadeUp 0.8s var(--bounce) 0.3s both;
     }
+    .glare-hover::after{content:'';position:absolute;inset:0;background:linear-gradient(var(--gh-angle,120deg),hsla(0,0%,0%,0) 50%,var(--gh-rgba,rgba(255,255,255,.2)) 65%,hsla(0,0%,0%,0) 80%);transition:var(--gh-duration,.5s) ease;background-size:var(--gh-size,300% 300%);background-repeat:no-repeat;background-position:-150% -150%;z-index:0;pointer-events:none;border-radius:12px}.glare-hover:hover::after{background-position:150% 150%}
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -1382,7 +1383,7 @@
       <h1 class="hero-title"><span style="display:block;white-space:nowrap">把合同 <span class="hl-red focus-group" id="fg1">[翻译]</span></span><span style="display:block">成 <span class="hl-red focus-group" id="fg2">人话</span></span><div class="focus-frame" id="focusFrame"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div></h1>
       <p class="hero-sub">AI 自动标出风险条款、违约金陷阱、自动续费套路。<br/>拍照或粘贴合同，一分钟看懂再签。</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">上传合同<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
+        <button class="btn-primary glare-hover" style="--gh-angle:120deg;--gh-rgba:rgba(255,255,255,0.15);--gh-duration:0.7s;--gh-size:300% 300%" onclick="openModal()">上传合同<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
         <div class="hero-free"><span class="dot"></span>今日免费 <span>1</span> 次 · ¥3/次 · ¥8/月</div>
       </div>
       <div class="hero-tags">
