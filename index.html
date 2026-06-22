@@ -1554,14 +1554,13 @@
 
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
     async function getWeeklyUsage() {
-      if(AppState.userId){ try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).single(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } } catch(e){} }
+      if(AppState.userId){ try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).maybeSingle(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } else if(!r.data) { } } catch(e){} }
       return getLocalUsage();
     }
     async function addWeeklyUsage(count) {
-      var u = (await getWeeklyUsage()) + count;
-      if(AppState.userId){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}); } catch(e){} }
+      var prev = await getWeeklyUsage(); var u = prev + count;
+      if(AppState.userId){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}, {onConflict:'id'}); } catch(e){} }
       addLocalUsage(count);
-      return 5000 - u;
     }
     async function updateRemainDisplay() { var el = document.getElementById('remainWords'); if(el){ var u = await getWeeklyUsage(); el.textContent = Math.max(0, 5000 - u); } }
 
