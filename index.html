@@ -85,6 +85,7 @@
       display: flex;
       align-items: center;
       gap: 28px;
+      position: relative;
     }
     .nav-links a {
       text-decoration: none;
@@ -95,6 +96,28 @@
       position: relative;
     }
     .nav-links a:hover { color: var(--slate-900); }
+    .nav-links a.active { color: var(--red-p); }
+    .nav-indicator {
+      position: absolute; bottom: -6px; height: 2px; border-radius: 1px;
+      background: var(--red-p); transition: transform 0.35s ease;
+      left: 0; width: 0; transform-origin: center; transform: scaleX(0);
+    }
+    .nav-indicator.show { transform: scaleX(1); }
+    .nav-quota {
+      display: flex; align-items: center; gap: 6px; cursor: pointer; position: relative;
+      color: var(--slate-500); text-decoration: none;
+    }
+    .nav-quota svg { color: var(--slate-400); flex-shrink: 0; }
+    .nq-text { font-size: 14px; font-weight: 500; color: var(--slate-700); }
+    .nq-hint { font-size: 10px; color: var(--slate-300); cursor: pointer; white-space: nowrap; }
+    .nq-hint:hover { color: var(--red-p); }
+    .nq-tip {
+      display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 5px;
+      white-space: nowrap; pointer-events: none; z-index: 99;
+    }
+    .nav-quota:hover .nq-tip { display: block; }
+    @media (max-width: 768px) { .nav-quota .nq-hint { display: none; } }
 
     .btn-login {
       padding: 8px 20px; border-radius: 8px;
@@ -1323,43 +1346,62 @@
     .history-empty button:hover { background: var(--slate-700); }
 
     /* Pricing */
+    .pricing-header { text-align: center; margin-bottom: 64px; }
+    .pricing-header .section-title { font-size: 36px; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .pricing-header .section-sub { font-size: 16px; color: #94a3b8; }
     .pricing-section {
-      padding: 48px 48px; max-width: 1200px; margin: 0 auto; min-height: 80vh;
+      padding: 120px 48px 80px; max-width: 1120px; margin: 0 auto; min-height: 90vh;
       display: flex; flex-direction: column; justify-content: center;
     }
-    .pricing-section .section-title { font-size: 28px; font-weight: 700; color: var(--slate-900); text-align: center; margin-bottom: 4px; }
-    .pricing-section .section-sub { text-align: center; color: var(--slate-400); font-size: 14px; margin-bottom: 36px; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
     .plan-card {
-      background: #fff; border: 1px solid var(--slate-200); border-radius: 24px;
-      padding: 48px 32px 40px; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
-      position: relative; overflow: hidden; display: flex; flex-direction: column;
+      background: #fff; padding: 40px 32px; transition: all 0.3s ease;
+      position: relative; display: flex; flex-direction: column;
+      border: 1px solid #e2e8f0; margin: 0 -1px 0 0;
     }
-    .plan-card:hover { border-color: var(--slate-300); box-shadow: 0 24px 60px rgba(0,0,0,0.08); transform: translateY(-6px); }
-    .plan-card.recommended { border-color: var(--red-p); border-width: 2px; box-shadow: 0 8px 24px rgba(220,38,38,0.08); }
-    .plan-ribbon {
-      position: absolute; top: 18px; right: -28px; background: var(--red-p); color: #fff;
-      font-size: 10px; font-weight: 700; padding: 4px 32px; transform: rotate(45deg); letter-spacing: 0.06em;
+    .plan-card:first-child { border-radius: 20px 0 0 20px; }
+    .plan-card:last-child { border-radius: 0 20px 20px 0; margin-right: 0; }
+    .plan-card:hover { background: #fafbfc; z-index: 2; border-color: #cbd5e1; }
+    .plan-card.plan-free { background: #f8fafc; }
+    .plan-card.plan-popular {
+      background: #fff; border-color: var(--red-p); z-index: 3;
+      box-shadow: 0 8px 32px rgba(220,38,38,0.08);
     }
-    .plan-top { text-align: center; margin-bottom: 36px; }
-    .plan-name { font-size: 13px; font-weight: 600; color: var(--slate-400); margin-bottom: 14px; letter-spacing: 0.06em; }
-    .plan-price { font-size: 44px; font-weight: 700; color: var(--slate-900); line-height: 1; letter-spacing: -0.02em; }
-    .plan-unit { font-size: 12px; color: var(--slate-400); margin-top: 8px; }
-    .plan-body { flex: 1; margin-bottom: 36px; }
-    .plan-feature { font-size: 13px; color: var(--slate-500); padding: 9px 0; line-height: 1.3; }
-    .pf-check { color: var(--red-p); font-weight: 600; margin-right: 8px; }
+    .plan-badge {
+      position: absolute; top: 14px; right: 18px;
+      color: var(--red-p); font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+    }
+    .plan-name { font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 20px; }
+    .plan-price { font-size: 32px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 8px; }
+    .plan-desc { font-size: 13px; color: #94a3b8; margin-bottom: 32px; line-height: 1.5; }
+    .plan-features { list-style: none; padding: 0; margin: 0 0 32px; flex: 1; }
+    .plan-features li { font-size: 13px; color: #475569; padding: 8px 0; }
+    .plan-features li::before { content: '✓ '; color: var(--red-p); font-weight: 700; margin-right: 4px; }
     .plan-btn {
-      width: 100%; padding: 14px 0; border-radius: 12px; border: 1px solid var(--slate-200);
-      background: #fff; color: var(--slate-900); font-family: inherit; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: all 0.3s ease;
+      width: 100%; padding: 14px 0; border-radius: 12px; border: 1px solid #e2e8f0;
+      background: #fff; color: #0f172a; font-family: inherit; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; text-align: center;
     }
-    .plan-btn:hover { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
-    .plan-card.recommended .plan-btn { background: var(--red-p); color: #fff; border-color: var(--red-p); }
-    .plan-card.recommended .plan-btn:hover { background: #B91C1C; border-color: #B91C1C; }
-    .plan-btn.current { border-color: var(--slate-200); color: var(--slate-400); background: var(--slate-50); cursor: default; }
-    .pricing-note { text-align: center; color: var(--slate-300); font-size: 12px; margin-top: 20px; }
-    @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } .pricing-section { padding: 32px 20px; min-height: auto; } }
-    @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } .plan-card { padding: 36px 28px 32px; } }
+    .plan-btn:hover { background: #0f172a; color: #fff; border-color: #0f172a; }
+    .plan-btn.primary { background: var(--red-p); color: #fff; border-color: var(--red-p); }
+    .plan-btn.primary:hover { background: #B91C1C; border-color: #B91C1C; }
+    .plan-btn.current { background: transparent; border-color: transparent; color: #94a3b8; cursor: default; }
+    .pricing-note { text-align: center; color: #cbd5e1; font-size: 12px; margin-top: 32px; }
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+      .plan-card:first-child { border-radius: 20px 0 0 0; }
+      .plan-card:nth-child(2) { border-radius: 0 20px 0 0; margin-right: 0; }
+      .plan-card:nth-child(3) { border-radius: 0 0 0 20px; }
+      .plan-card:last-child { border-radius: 0 0 20px 0; }
+      .plan-card.plan-popular { border-radius: 20px; margin: -12px -1px; padding: 48px 28px; }
+      .pricing-section { padding: 48px 24px; min-height: auto; }
+    }
+    @media (max-width: 480px) {
+      .pricing-grid { grid-template-columns: 1fr; gap: 16px; }
+      .plan-card, .plan-card:first-child, .plan-card:last-child, .plan-card:nth-child(2), .plan-card:nth-child(3) { border-radius: 16px; margin: 0; }
+      .plan-card.plan-popular { border-radius: 16px; margin: 0; padding: 40px 28px; }
+      .pricing-section { padding: 32px 16px; }
+    }
 
     /* =====================================
        Responsive additions
@@ -1404,10 +1446,17 @@
       说人话
     </a>
     <div class="nav-links">
+      <div class="nav-quota" id="navQuota" onclick="navigateTo('pricing');return false">
+        <svg viewBox="0 0 1024 1024" width="15" height="15" fill="#94a3b8"><path d="M64 66v304l40-1c13-111 102-187 153-199 50-13 148 1 148 1s-1 625-1 669c0 44-60 63-60 63l-79 1-1 56h493v-54h-90c-41-4-66-57-66-57l1-684s62-12 151 5c89 16 164 204 164 204h40V66H64z"/></svg>
+        <span class="nq-text" id="nqText">5,000 字</span>
+        <span class="nq-hint">剩余余额</span>
+        <span class="nq-tip" id="nqTip">剩余余额大约还可分析 5 篇合同</span>
+      </div>
       <a href="#" onclick="navigateTo('results');return false">分析报告</a>
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
       <a href="#" onclick="navigateTo('pricing');return false">收费</a>
       <a href="#" class="btn-login">登录<span class="login-tip">功能暂未上线</span></a>
+      <span class="nav-indicator" id="navInd"></span>
     </div>
   </nav>
 
@@ -1532,64 +1581,60 @@
 
   <div class="page page-pricing" id="page-pricing">
   <section class="pricing-section">
-    <h2 class="section-title">选择你的方案</h2>
-    <p class="section-sub">字数永久有效，用不完不过期</p>
+    <div class="pricing-header">
+      <h2 class="section-title">简单、透明的定价</h2>
+      <p class="section-sub">一次性付费，字数永久有效，无任何隐藏费用</p>
+    </div>
     <div class="pricing-grid">
-      <div class="plan-card">
-        <div class="plan-top">
-          <div class="plan-name">免费</div>
-          <div class="plan-price">¥0</div>
-          <div class="plan-unit">/周</div>
-        </div>
-        <div class="plan-body">
-          <div class="plan-feature"><span class="pf-check">✓</span> 5,000 字</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 每周一额度重置</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 有限次分析</div>
-        </div>
+      <div class="plan-card plan-free">
+        <div class="plan-name">入门</div>
+        <div class="plan-price">免费</div>
+        <div class="plan-desc">适合初次体验</div>
+        <ul class="plan-features">
+          <li>5,000 字 / 周</li>
+          <li>周一自动重置</li>
+          <li>基础合同分析</li>
+        </ul>
         <button class="plan-btn current" disabled>当前方案</button>
       </div>
-      <div class="plan-card recommended">
-        <span class="plan-ribbon">NEW</span>
-        <div class="plan-top">
-          <div class="plan-name">体验包</div>
-          <div class="plan-price">¥4.9</div>
-          <div class="plan-unit">永久</div>
-        </div>
-        <div class="plan-body">
-          <div class="plan-feature"><span class="pf-check">✓</span> 25,000 字</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 约 25 份合同</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
-        </div>
-        <button class="plan-btn" onclick="buyPlan('lite',25000,4.9)">立即购买</button>
+      <div class="plan-card plan-popular">
+        <span class="plan-badge">NEW</span>
+        <div class="plan-name">体验包</div>
+        <div class="plan-price">¥4.9</div>
+        <div class="plan-desc">偶尔使用的最佳选择</div>
+        <ul class="plan-features">
+          <li>25,000 字</li>
+          <li>约 25 份合同</li>
+          <li>永久有效</li>
+        </ul>
+        <button class="plan-btn primary" onclick="buyPlan('lite',25000,4.9)">点击订阅</button>
       </div>
       <div class="plan-card">
-        <div class="plan-top">
-          <div class="plan-name">基础包</div>
-          <div class="plan-price">¥14.9</div>
-          <div class="plan-unit">永久</div>
-        </div>
-        <div class="plan-body">
-          <div class="plan-feature"><span class="pf-check">✓</span> 100,000 字</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 约 100 份合同</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
-        </div>
-        <button class="plan-btn" onclick="buyPlan('basic',100000,14.9)">立即购买</button>
+        <span class="plan-badge" style="color:#2563EB">VALUE</span>
+        <div class="plan-name">基础包</div>
+        <div class="plan-price">¥14.9</div>
+        <div class="plan-desc">满足日常高频需求</div>
+        <ul class="plan-features">
+          <li>100,000 字</li>
+          <li>约 100 份合同</li>
+          <li>永久有效</li>
+        </ul>
+        <button class="plan-btn" onclick="buyPlan('basic',100000,14.9)">点击订阅</button>
       </div>
       <div class="plan-card">
-        <div class="plan-top">
-          <div class="plan-name">进阶包</div>
-          <div class="plan-price">¥34.9</div>
-          <div class="plan-unit">永久</div>
-        </div>
-        <div class="plan-body">
-          <div class="plan-feature"><span class="pf-check">✓</span> 350,000 字</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 高频使用</div>
-          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
-        </div>
-        <button class="plan-btn" onclick="buyPlan('pro',350000,34.9)">立即购买</button>
+        <span class="plan-badge" style="color:#D97706">PRO</span>
+        <div class="plan-name">进阶包</div>
+        <div class="plan-price">¥34.9</div>
+        <div class="plan-desc">专业级合同审查</div>
+        <ul class="plan-features">
+          <li>350,000 字</li>
+          <li>充足额度</li>
+          <li>永久有效</li>
+        </ul>
+        <button class="plan-btn" onclick="buyPlan('pro',350000,34.9)">点击订阅</button>
       </div>
     </div>
-    <p class="pricing-note">支付功能即将上线，敬请期待</p>
+    <p class="pricing-note">付费功能即将上线 · 现有功能免费使用</p>
   </section>
   </div>
 
@@ -1598,6 +1643,17 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
       if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } }
+      document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
+      var bar = document.getElementById('navInd'), pl = document.querySelector('.nav-links');
+      if (page === 'home') { if (bar) bar.classList.remove('show'); return; }
+      var navLink = document.querySelector('.nav-links a[onclick*="' + page + '"]');
+      if (!navLink || !bar) return;
+      navLink.classList.add('active');
+      bar.style.transition = 'none'; bar.classList.remove('show');
+      var r = navLink.getBoundingClientRect(), p = pl.getBoundingClientRect();
+      bar.style.left = (r.left - p.left) + 'px'; bar.style.width = r.width + 'px';
+      bar.getBoundingClientRect();
+      bar.style.transition = ''; bar.classList.add('show');
       window.scrollTo(0, 0);
       if (page === 'home') { setTimeout(alignAnnotations, 150); setTimeout(alignAnnotations, 400); }
     }
@@ -1664,7 +1720,13 @@
       if(AppState.userId){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}, {onConflict:'id'}); } catch(e){} }
       addLocalUsage(count);
     }
-    async function updateRemainDisplay() { var el = document.getElementById('remainWords'); if(el){ var u = await getWeeklyUsage(); el.textContent = Math.max(0, 5000 - u); } }
+    async function updateRemainDisplay() {
+      var el = document.getElementById('remainWords'); if(el){ var u = await getWeeklyUsage(); el.textContent = Math.max(0, 5000 - u); }
+      var r = 5000 - (await getWeeklyUsage());
+      var nt = document.getElementById('nqText'), tip = document.getElementById('nqTip');
+      if(nt) nt.textContent = Math.max(0, r).toLocaleString() + ' 字';
+      if(tip) tip.textContent = '剩余余额大约还可分析 ' + Math.max(1, Math.floor(r / 1000)) + ' 篇合同';
+    }
 
     function clearTextarea() { document.getElementById('contract-input').value = ''; }
     function clearFile() {
