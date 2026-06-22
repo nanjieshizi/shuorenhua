@@ -1324,42 +1324,42 @@
 
     /* Pricing */
     .pricing-section {
-      padding: 100px 40px 80px; max-width: 1000px; margin: 0 auto;
+      padding: 60px 40px; max-width: 1100px; margin: 0 auto; min-height: 80vh;
+      display: flex; flex-direction: column; justify-content: center;
     }
-    .pricing-section .section-title { font-size: 28px; font-weight: 700; color: var(--slate-900); text-align: center; margin-bottom: 8px; }
-    .pricing-section .section-sub { text-align: center; color: var(--slate-400); font-size: 14px; margin-bottom: 48px; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .pricing-section .section-title { font-size: 32px; font-weight: 800; color: var(--slate-900); text-align: center; margin-bottom: 4px; letter-spacing: -0.02em; }
+    .pricing-section .section-sub { text-align: center; color: var(--slate-400); font-size: 15px; margin-bottom: 40px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
     .plan-card {
-      background: #fff; border: 1px solid var(--slate-200); border-radius: 16px;
-      padding: 32px 24px 24px; transition: all 0.3s ease; position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
+      background: #fff; border: 1px solid var(--slate-200); border-radius: 20px;
+      padding: 40px 28px 32px; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      position: relative; overflow: hidden; display: flex; flex-direction: column;
     }
-    .plan-card:hover { border-color: var(--red-p); box-shadow: 0 12px 40px rgba(0,0,0,0.06); transform: translateY(-4px); }
-    .plan-card.recommended { border-color: var(--red-p); border-width: 2px; }
+    .plan-card:hover { border-color: var(--slate-300); box-shadow: 0 20px 50px rgba(0,0,0,0.07); transform: translateY(-6px); }
+    .plan-card.recommended { border-color: var(--red-p); border-width: 2px; box-shadow: 0 4px 20px rgba(220,38,38,0.08); }
     .plan-ribbon {
-      position: absolute; top: 12px; right: -32px; background: var(--red-p); color: #fff;
-      font-size: 10px; font-weight: 700; padding: 3px 36px; transform: rotate(45deg);
-      letter-spacing: 0.04em;
+      position: absolute; top: 16px; right: -28px; background: var(--red-p); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 4px 32px; transform: rotate(45deg); letter-spacing: 0.04em;
     }
-    .plan-top { text-align: center; margin-bottom: 24px; }
-    .plan-name { font-size: 15px; font-weight: 700; color: var(--slate-700); margin-bottom: 8px; }
-    .plan-price { font-size: 40px; font-weight: 800; color: var(--slate-900); line-height: 1; }
-    .plan-unit { font-size: 12px; color: var(--slate-400); margin-top: 4px; }
-    .plan-body { flex: 1; margin-bottom: 20px; }
-    .plan-feature { font-size: 13px; color: var(--slate-600); padding: 6px 0; }
-    .pf-check { color: var(--red-p); font-weight: 700; margin-right: 6px; }
+    .plan-top { text-align: center; margin-bottom: 28px; }
+    .plan-name { font-size: 16px; font-weight: 700; color: var(--slate-500); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .plan-price { font-size: 48px; font-weight: 800; color: var(--slate-900); line-height: 1; letter-spacing: -0.03em; }
+    .plan-unit { font-size: 13px; color: var(--slate-400); margin-top: 6px; font-weight: 500; }
+    .plan-body { flex: 1; margin-bottom: 28px; }
+    .plan-feature { font-size: 14px; color: var(--slate-600); padding: 8px 0; line-height: 1.4; }
+    .pf-check { color: var(--red-p); font-weight: 700; margin-right: 8px; font-size: 16px; }
     .plan-btn {
-      width: 100%; padding: 12px 0; border-radius: 10px; border: 1px solid var(--red-p);
-      background: #fff; color: var(--red-p); font-family: inherit; font-size: 14px; font-weight: 600;
+      width: 100%; padding: 14px 0; border-radius: 12px; border: 1px solid var(--slate-200);
+      background: #fff; color: var(--slate-900); font-family: inherit; font-size: 15px; font-weight: 600;
       cursor: pointer; transition: all 0.3s ease;
     }
-    .plan-btn:hover { background: var(--red-p); color: #fff; }
-    .plan-card.recommended .plan-btn { background: var(--red-p); color: #fff; }
-    .plan-card.recommended .plan-btn:hover { background: #B91C1C; }
+    .plan-btn:hover { background: var(--slate-900); color: #fff; border-color: var(--slate-900); }
+    .plan-card.recommended .plan-btn { background: var(--red-p); color: #fff; border-color: var(--red-p); }
+    .plan-card.recommended .plan-btn:hover { background: #B91C1C; border-color: #B91C1C; }
     .plan-btn.current { border-color: var(--slate-200); color: var(--slate-400); background: var(--slate-50); cursor: default; }
-    .pricing-note { text-align: center; color: var(--slate-300); font-size: 13px; margin-top: 32px; }
-    @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } .pricing-section { padding: 80px 20px 60px; } }
-    @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } .plan-price { font-size: 32px; } }
+    .pricing-note { text-align: center; color: var(--slate-300); font-size: 13px; margin-top: 24px; }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } .pricing-section { padding: 40px 20px; min-height: auto; } }
+    @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } .plan-card { padding: 32px 24px 24px; } .plan-price { font-size: 40px; } }
 
     /* =====================================
        Responsive additions
