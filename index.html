@@ -95,15 +95,6 @@
       position: relative;
     }
     .nav-links a:hover { color: var(--slate-900); }
-    .nav-pricing {
-      background: linear-gradient(135deg, #DC2626, #E11D48);
-      color: #fff !important;
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-    }
-    .nav-pricing:hover { color: #fff !important; opacity: 0.9; transform: translateY(-1px); }
 
     .btn-login {
       padding: 8px 20px; border-radius: 8px;
@@ -1336,28 +1327,39 @@
       padding: 100px 40px 80px; max-width: 1000px; margin: 0 auto;
     }
     .pricing-section .section-title { font-size: 28px; font-weight: 700; color: var(--slate-900); text-align: center; margin-bottom: 8px; }
-    .pricing-section .section-sub { text-align: center; color: var(--slate-400); font-size: 14px; margin-bottom: 40px; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .pricing-section .section-sub { text-align: center; color: var(--slate-400); font-size: 14px; margin-bottom: 48px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .plan-card {
       background: #fff; border: 1px solid var(--slate-200); border-radius: 16px;
-      padding: 28px 20px; text-align: center; transition: all 0.3s ease;
+      padding: 32px 24px 24px; transition: all 0.3s ease; position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
     }
-    .plan-card:hover { border-color: var(--red-p); box-shadow: 0 8px 30px rgba(220,38,38,0.08); transform: translateY(-2px); }
-    .plan-badge { font-size: 13px; font-weight: 600; color: var(--slate-600); margin-bottom: 12px; }
-    .plan-badge.highlight { color: var(--red-p); }
-    .plan-price { font-size: 36px; font-weight: 800; color: var(--slate-900); margin-bottom: 4px; }
-    .plan-quota { font-size: 14px; font-weight: 600; color: var(--slate-700); margin-bottom: 12px; }
-    .plan-desc { font-size: 12px; color: var(--slate-400); margin-bottom: 20px; line-height: 1.5; }
+    .plan-card:hover { border-color: var(--red-p); box-shadow: 0 12px 40px rgba(0,0,0,0.06); transform: translateY(-4px); }
+    .plan-card.recommended { border-color: var(--red-p); border-width: 2px; }
+    .plan-ribbon {
+      position: absolute; top: 12px; right: -32px; background: var(--red-p); color: #fff;
+      font-size: 10px; font-weight: 700; padding: 3px 36px; transform: rotate(45deg);
+      letter-spacing: 0.04em;
+    }
+    .plan-top { text-align: center; margin-bottom: 24px; }
+    .plan-name { font-size: 15px; font-weight: 700; color: var(--slate-700); margin-bottom: 8px; }
+    .plan-price { font-size: 40px; font-weight: 800; color: var(--slate-900); line-height: 1; }
+    .plan-unit { font-size: 12px; color: var(--slate-400); margin-top: 4px; }
+    .plan-body { flex: 1; margin-bottom: 20px; }
+    .plan-feature { font-size: 13px; color: var(--slate-600); padding: 6px 0; }
+    .pf-check { color: var(--red-p); font-weight: 700; margin-right: 6px; }
     .plan-btn {
-      width: 100%; padding: 10px 0; border-radius: 10px; border: 1px solid var(--red-p);
+      width: 100%; padding: 12px 0; border-radius: 10px; border: 1px solid var(--red-p);
       background: #fff; color: var(--red-p); font-family: inherit; font-size: 14px; font-weight: 600;
       cursor: pointer; transition: all 0.3s ease;
     }
     .plan-btn:hover { background: var(--red-p); color: #fff; }
+    .plan-card.recommended .plan-btn { background: var(--red-p); color: #fff; }
+    .plan-card.recommended .plan-btn:hover { background: #B91C1C; }
     .plan-btn.current { border-color: var(--slate-200); color: var(--slate-400); background: var(--slate-50); cursor: default; }
     .pricing-note { text-align: center; color: var(--slate-300); font-size: 13px; margin-top: 32px; }
     @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } .pricing-section { padding: 80px 20px 60px; } }
-    @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } .plan-price { font-size: 28px; } }
+    @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } .plan-price { font-size: 32px; } }
 
     /* =====================================
        Responsive additions
@@ -1404,7 +1406,7 @@
     <div class="nav-links">
       <a href="#" onclick="navigateTo('results');return false">分析报告</a>
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
-      <a href="#" class="nav-pricing" onclick="navigateTo('pricing');return false">💎 升级</a>
+      <a href="#" onclick="navigateTo('pricing');return false">收费</a>
       <a href="#" class="btn-login">登录<span class="login-tip">功能暂未上线</span></a>
     </div>
   </nav>
@@ -1530,35 +1532,60 @@
 
   <div class="page page-pricing" id="page-pricing">
   <section class="pricing-section">
-    <h2 class="section-title">选择适合你的方案</h2>
+    <h2 class="section-title">选择你的方案</h2>
     <p class="section-sub">字数永久有效，用不完不过期</p>
     <div class="pricing-grid">
       <div class="plan-card">
-        <div class="plan-badge">免费</div>
-        <div class="plan-price">¥0</div>
-        <div class="plan-quota">5,000字 / 周</div>
-        <div class="plan-desc">适合初次体验，每周一额度重置</div>
+        <div class="plan-top">
+          <div class="plan-name">免费</div>
+          <div class="plan-price">¥0</div>
+          <div class="plan-unit">/周</div>
+        </div>
+        <div class="plan-body">
+          <div class="plan-feature"><span class="pf-check">✓</span> 5,000 字</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 每周一额度重置</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 有限次分析</div>
+        </div>
         <button class="plan-btn current" disabled>当前方案</button>
       </div>
-      <div class="plan-card">
-        <div class="plan-badge highlight">体验包</div>
-        <div class="plan-price">¥4.9</div>
-        <div class="plan-quota">25,000字</div>
-        <div class="plan-desc">约 25 份普通合同 · 永久有效</div>
+      <div class="plan-card recommended">
+        <span class="plan-ribbon">最受欢迎</span>
+        <div class="plan-top">
+          <div class="plan-name">体验包</div>
+          <div class="plan-price">¥4.9</div>
+          <div class="plan-unit">永久</div>
+        </div>
+        <div class="plan-body">
+          <div class="plan-feature"><span class="pf-check">✓</span> 25,000 字</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 约 25 份合同</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
+        </div>
         <button class="plan-btn" onclick="buyPlan('lite',25000,4.9)">立即购买</button>
       </div>
       <div class="plan-card">
-        <div class="plan-badge highlight">基础包</div>
-        <div class="plan-price">¥14.9</div>
-        <div class="plan-quota">100,000字</div>
-        <div class="plan-desc">约 100 份合同 · 永久有效</div>
+        <div class="plan-top">
+          <div class="plan-name">基础包</div>
+          <div class="plan-price">¥14.9</div>
+          <div class="plan-unit">永久</div>
+        </div>
+        <div class="plan-body">
+          <div class="plan-feature"><span class="pf-check">✓</span> 100,000 字</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 约 100 份合同</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
+        </div>
         <button class="plan-btn" onclick="buyPlan('basic',100000,14.9)">立即购买</button>
       </div>
       <div class="plan-card">
-        <div class="plan-badge highlight">进阶包</div>
-        <div class="plan-price">¥34.9</div>
-        <div class="plan-quota">350,000字</div>
-        <div class="plan-desc">高频使用 · 永久有效</div>
+        <div class="plan-top">
+          <div class="plan-name">进阶包</div>
+          <div class="plan-price">¥34.9</div>
+          <div class="plan-unit">永久</div>
+        </div>
+        <div class="plan-body">
+          <div class="plan-feature"><span class="pf-check">✓</span> 350,000 字</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 高频使用</div>
+          <div class="plan-feature"><span class="pf-check">✓</span> 永久有效</div>
+        </div>
         <button class="plan-btn" onclick="buyPlan('pro',350000,34.9)">立即购买</button>
       </div>
     </div>
