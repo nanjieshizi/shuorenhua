@@ -41,6 +41,11 @@
 
     html { scroll-behavior: smooth; }
 
+    html, body {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
     body {
       font-family: 'Noto Sans SC', -apple-system, sans-serif;
       background: var(--slate-50);
@@ -1102,9 +1107,14 @@
     .compare-right {
       width: 360px; overflow-y: auto; flex-shrink: 0;
       padding: 24px 24px 20px; box-sizing: border-box;
-      scrollbar-width: none;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none;
     }
-    .compare-right::-webkit-scrollbar { display: none; }
+    .compare-right::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+    .compare-right::-webkit-scrollbar-thumb { display: none !important; }
+    .compare-left::-webkit-scrollbar, .compare-view::-webkit-scrollbar,
+    .results-section::-webkit-scrollbar, .history-section::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+    .compare-left, .compare-view, .results-section, .history-section { scrollbar-width: none !important; -ms-overflow-style: none !important; }
     .compare-right .cr-header {
       font-size: 12px; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
       text-transform: uppercase; margin-bottom: 28px; display: flex; align-items: center; gap: 8px;
