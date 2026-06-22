@@ -1546,7 +1546,7 @@
 
     var _hist = JSON.parse(localStorage.getItem('contractHistory') || '[]'); _hist.sort(function(a,b){return b.id-a.id;});
     var SB = supabase.createClient('https://wvnwpradfjwjpzodsznp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bndwcmFkZmp3anB6b2Rzem5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODM4NzUsImV4cCI6MjA5NzY1OTg3NX0.NcPMcz631x1HD5DFmK5Sg1nQ0kQMCvPJOOKVdxOt6q8');
-    (async function(){ try { var r = await SB.auth.signInAnonymically(); if(!r.error && r.data && r.data.user) { AppState.userId = r.data.user.id; console.log('Supabase登录成功'); } else { console.log('Supabase匿名登录失败,使用本地存储'); } } catch(e) { console.log('Supabase连接失败,使用本地存储'); } })();
+    (async function(){ try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) { AppState.userId = r.data.user.id; console.log('Supabase登录成功'); } else { console.log('Supabase匿名登录失败,使用本地存储'); } } catch(e) { console.log('Supabase连接失败,使用本地存储'); } })();
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: null };
 
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
