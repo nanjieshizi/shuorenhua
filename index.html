@@ -126,18 +126,11 @@
 
     .btn-login {
       padding: 8px 20px; border-radius: 8px;
-      background: var(--slate-200); color: var(--slate-400) !important;
+      background: var(--slate-900); color: #fff !important;
       font-weight: 600 !important; font-size: 13px !important;
-      cursor: not-allowed; position: relative;
+      cursor: pointer; position: relative; transition: all 0.2s;
     }
-    .btn-login:hover { background: var(--slate-200) !important; transform: none; }
-    .btn-login .login-tip {
-      display: none; position: absolute; top: calc(100% + 8px); left: 50%;
-      transform: translateX(-50%); background: #1e293b; color: #fff;
-      font-size: 11px; font-weight: 400; padding: 5px 10px; border-radius: 5px;
-      white-space: nowrap; pointer-events: none; z-index: 999;
-    }
-    .btn-login:hover .login-tip { display: block; }
+    .btn-login:hover { background: var(--slate-700) !important; }
 
     /* =====================================
        Hero
@@ -858,6 +851,26 @@
     .modal-footer .free-count .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulseDot 2s ease-in-out infinite; }
     .modal-footer .free-count span { color: var(--slate-900); font-weight: 600; }
     .modal-footer .trust-note { font-size: 12px; color: var(--slate-400); display: flex; align-items: center; gap: 4px; }
+
+    /* Login */
+    .login-overlay { display: none; position: fixed; inset: 0; z-index: 1001; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+    .login-overlay.active { display: flex; }
+    .login-card { background: #fff; border-radius: 20px; padding: 40px 36px 32px; width: 400px; max-width: 90vw; position: relative; box-shadow: 0 24px 80px rgba(0,0,0,0.12); }
+    .login-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--slate-100); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--slate-400); }
+    .login-close:hover { background: var(--slate-200); color: var(--slate-600); }
+    .login-close svg { width: 14px; height: 14px; }
+    .login-card h3 { font-size: 20px; font-weight: 700; color: var(--slate-900); margin-bottom: 4px; }
+    .login-card p { font-size: 13px; color: var(--slate-400); margin-bottom: 24px; }
+    .login-step input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--slate-200); border-radius: 12px; font-family: inherit; font-size: 15px; color: var(--slate-800); transition: border-color 0.2s; box-sizing: border-box; }
+    .login-step input:focus { outline: none; border-color: var(--red-p); }
+    .login-btn { width: 100%; padding: 14px 0; border: none; border-radius: 12px; background: var(--slate-900); color: #fff; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
+    .login-btn:hover { background: var(--slate-700); }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-back { color: var(--slate-400); cursor: pointer; font-size: 13px; margin-bottom: 12px; display: inline-block; }
+    .login-back:hover { color: var(--slate-600); }
+    .login-sent { margin-bottom: 16px; color: var(--slate-500); }
+    .login-success { text-align: center; font-size: 18px; font-weight: 700; color: #10B981; padding: 28px 0 16px; }
+    .login-note { text-align: center; margin-top: 20px; margin-bottom: 0; font-size: 11px; color: var(--slate-300); }
     /* =====================================
        Results Section
     ===================================== */
@@ -1462,7 +1475,7 @@
       <a href="#" onclick="navigateTo('results');return false">分析报告</a>
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
       <a href="#" onclick="navigateTo('pricing');return false">收费</a>
-      <a href="#" class="btn-login">登录<span class="login-tip">功能暂未上线</span></a>
+      <a href="#" class="btn-login" id="btnLogin" onclick="event.preventDefault();toggleLogin()">登录</a>
       <span class="nav-indicator" id="navInd"></span>
     </div>
   </nav>
@@ -1509,6 +1522,29 @@
       <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持 PDF、JPG、PNG</div><div class="up-warn">图片识别率较低，建议使用文本粘贴或 PDF 上传</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button><div class="ai-progress" id="aiProgress"><div class="ai-bar" id="aiBar"></div></div>
       <div class="modal-footer"><div class="free-count"><span class="dot"></span><span id="modalRemain">每周免费 5,000 字</span></div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
+    </div>
+  </div>
+
+  <div class="login-overlay" id="loginOverlay" onclick="if(event.target===this)closeLogin()">
+    <div class="login-card" onclick="event.stopPropagation()">
+      <button class="login-close" onclick="closeLogin()"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <h3 id="loginTitle">登录或创建账户</h3>
+      <p id="loginSub">输入邮箱，我们将发送验证码</p>
+      <div class="login-step" id="loginStep1">
+        <input type="email" id="loginEmail" placeholder="输入邮箱地址" autocomplete="email">
+        <button class="login-btn" onclick="sendLoginCode()">发送验证码</button>
+      </div>
+      <div class="login-step" id="loginStep2" style="display:none">
+        <p class="login-back" onclick="backToEmail()">← 返回修改邮箱</p>
+        <p class="login-sent">验证码已发送至 <strong id="sentEmail"></strong></p>
+        <input type="text" id="loginCode" placeholder="输入6位验证码" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+        <button class="login-btn" onclick="verifyLoginCode()">验证并登录</button>
+      </div>
+      <div class="login-step" id="loginDone" style="display:none">
+        <div class="login-success">✓ 登录成功</div>
+        <button class="login-btn" onclick="closeLogin()">开始使用</button>
+      </div>
+      <p class="login-note">登录后可跨设备同步记录与额度</p>
     </div>
   </div>
 
@@ -1714,8 +1750,12 @@
 
     var _hist = JSON.parse(localStorage.getItem('contractHistory') || '[]'); _hist.sort(function(a,b){return b.id-a.id;});
     var SB = typeof supabase !== 'undefined' ? supabase.createClient('https://wvnwpradfjwjpzodsznp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bndwcmFkZmp3anB6b2Rzem5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODM4NzUsImV4cCI6MjA5NzY1OTg3NX0.NcPMcz631x1HD5DFmK5Sg1nQ0kQMCvPJOOKVdxOt6q8') : null;
-    if(SB) (async function(){ try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) { AppState.userId = r.data.user.id; } } catch(e){} })();
-    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: null };
+    function generateUUID() { var u = localStorage.getItem('uid') || crypto.randomUUID(); localStorage.setItem('uid', u); return u; }
+    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: generateUUID() };
+    if(SB) (async function(){
+      try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
+      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user) { AppState.userId = s.data.session.user.id; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
+    })();
 
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
     function addLocalUsage(c) { var k = getWeekKey(), n = getLocalUsage() + c; localStorage.setItem('wu', JSON.stringify({wk:k,n:n})); }
@@ -2361,6 +2401,39 @@
     function buyPlan(plan, words, price) { alert('支付功能即将上线，敬请期待！'); }
 
     function toggleExport() { document.getElementById('exportMenu').classList.toggle('show'); }
+
+    // === 登录 ===
+    function toggleLogin() { if(AppState.userId) logout(); else openLogin(); }
+    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginStep1').style.display='block'; document.getElementById('loginStep2').style.display='none'; document.getElementById('loginDone').style.display='none'; document.getElementById('loginEmail').value=''; document.getElementById('loginCode').value=''; }
+    function closeLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
+    async function sendLoginCode() {
+      var email = document.getElementById('loginEmail').value.trim();
+      if(!email || email.indexOf('@') === -1) { alert('请输入有效邮箱'); return; }
+      var btn = document.querySelector('#loginStep1 .login-btn'); btn.disabled = true; btn.textContent = '发送中...';
+      var r = await SB.auth.signInWithOtp({ email: email });
+      btn.disabled = false; btn.textContent = '发送验证码';
+      if(r.error) { alert('发送失败: ' + r.error.message); return; }
+      document.getElementById('sentEmail').textContent = email;
+      document.getElementById('loginStep1').style.display = 'none'; document.getElementById('loginStep2').style.display = 'block';
+    }
+    function backToEmail() { document.getElementById('loginStep1').style.display='block'; document.getElementById('loginStep2').style.display='none'; }
+    async function verifyLoginCode() {
+      var email = document.getElementById('sentEmail').textContent, code = document.getElementById('loginCode').value.trim();
+      if(!code) return;
+      var btn = document.querySelector('#loginStep2 .login-btn'); btn.disabled = true; btn.textContent = '验证中...';
+      var r = await SB.auth.verifyOtp({ email: email, token: code, type: 'email' });
+      btn.disabled = false; btn.textContent = '验证并登录';
+      if(r.error) { alert('验证失败: ' + r.error.message); return; }
+      AppState.userId = r.data.user.id;
+      document.getElementById('loginStep2').style.display = 'none'; document.getElementById('loginDone').style.display = 'block';
+      document.getElementById('btnLogin').textContent = email.split('@')[0];
+      updateRemainDisplay();
+    }
+    async function logout() {
+      await SB.auth.signOut(); AppState.userId = generateUUID();
+      document.getElementById('btnLogin').textContent = '登录';
+      updateRemainDisplay();
+    }
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
 
     function buildExportDoc() {
