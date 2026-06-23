@@ -1693,7 +1693,7 @@
       if(!AppState.isLoggedIn && (page === 'results' || page === 'history')) { openLogin(); return; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
-      if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } }
+      if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } if (page === 'history') { renderHistory(); } }
       document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
       var bar = document.getElementById('navInd'), pl = document.querySelector('.nav-links');
       if (page === 'home') { if (bar) bar.classList.remove('show'); scheduleAlign(); updateRemainDisplay(); window.scrollTo(0,0); return; }
@@ -1756,10 +1756,9 @@
     function closeModal() { var o = document.getElementById('modalOverlay'); o.classList.add('closing'); setTimeout(function() { o.classList.remove('visible','closing'); document.body.style.overflow = ''; }, 250); }
     function closeOnBackdrop(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
-    var _hist = JSON.parse(localStorage.getItem('contractHistory') || '[]'); _hist.sort(function(a,b){return b.id-a.id;});
     var SB = typeof supabase !== 'undefined' ? supabase.createClient('https://wvnwpradfjwjpzodsznp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bndwcmFkZmp3anB6b2Rzem5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODM4NzUsImV4cCI6MjA5NzY1OTg3NX0.NcPMcz631x1HD5DFmK5Sg1nQ0kQMCvPJOOKVdxOt6q8') : null;
     function generateUUID() { var u = localStorage.getItem('uid') || crypto.randomUUID(); localStorage.setItem('uid', u); return u; }
-    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: generateUUID(), isLoggedIn: false };
+    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: [], userId: generateUUID(), isLoggedIn: false };
     if(SB) (async function(){
       try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
       try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
@@ -2575,28 +2574,26 @@
       navigateTo('home'); openModal();
     }
 
-    function saveToHistory(type, score, high, med, low, total, clauses) {
+    async function saveToHistory(type, score, high, med, low, total, clauses) {
+      if(!AppState.isLoggedIn || !SB) return;
       var now = new Date();
       var dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
-      var record = { id: Date.now(), type: type, score: score, high: high, med: med, low: low, total: total, date: dateStr, clauses: clauses };
-      AppState.history.unshift(record);
-      AppState.history.sort(function(a, b) { return b.id - a.id; });
-      localStorage.setItem('contractHistory', JSON.stringify(AppState.history));
-      renderHistory(AppState.history);
+      try { await SB.from('history').insert({user_id:AppState.userId,type:type,score:score,high:high,med:med,low:low,total:total,date:dateStr,clauses:clauses}); } catch(e){}
     }
 
-    function renderHistory(records) {
+    async function renderHistory(records) {
       var list = document.getElementById('historyList'), empty = document.getElementById('historyEmpty');
-      // 动态生成分类标签（始终从全量历史中提取类型）
+      if(!AppState.isLoggedIn) { list.innerHTML = ''; empty.innerHTML = '<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="12" width="48" height="44" rx="4" stroke="currentColor" stroke-width="2"/></svg><h3>请先登录</h3><p>登录后可查看分析记录</p>'; empty.style.display = 'block'; return; }
+      if(!records) {
+        try { var r = await SB.from('history').select('*').eq('user_id',AppState.userId).order('id',{ascending:false}); records = r.data || []; } catch(e) { records = []; }
+      }
+      AppState.history = records;
       var filterDiv = document.getElementById('historyFilters');
-      var types = []; AppState.history.forEach(function(r) { if (types.indexOf(r.type) === -1) types.push(r.type); });
-      var curActive = AppState._filterType || 'all';
-      filterDiv.innerHTML = '<button class="' + (curActive === 'all' ? 'active' : '') + '" onclick="filterByType(\'all\')">全部</button>' + types.map(function(t) {
-        return '<button class="' + (curActive === t ? 'active' : '') + '" onclick="filterByType(\'' + t.replace(/'/g, "\\'") + '\')">' + t.replace('合同','').replace('协议','') + '</button>';
-      }).join('');
+      var types = []; records.forEach(function(r) { if(types.indexOf(r.type)===-1) types.push(r.type); });
+      filterDiv.innerHTML = '<button class="active" onclick="filterByType(\'all\')">全部</button>' + types.map(function(t) { return '<button onclick="filterByType(\'' + t.replace(/'/g,"\\'") + '\')">' + t.replace('合同','').replace('协议','') + '</button>'; }).join('');
       filterDiv.style.overflowX = types.length > 4 ? 'auto' : '';
       filterDiv.style.flexWrap = types.length > 4 ? 'nowrap' : '';
-      if (!records.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+      if (!records.length) { list.innerHTML = ''; empty.innerHTML = '<svg viewBox="0 0 64 64" fill="none"><rect x="8" y="12" width="48" height="44" rx="4" stroke="currentColor" stroke-width="2"/></svg><h3>还没有分析记录</h3><p>完成一份合同分析后，记录将自动保存在这里</p>'; empty.style.display = 'block'; return; }
       empty.style.display = 'none';
       var hsvg = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M807 0H248A152 152 0 0 0 96 152v721A152 152 0 0 0 248 1024h496l215-213V152A152 152 0 0 0 807 0zM160 872V152A88 88 0 0 1 248 64h559a88 88 0 0 1 88 88v576h-93a132 132 0 0 0-132 132v100H248a88 88 0 0 1-88-88zm576 72V858a68 68 0 0 1 68-68h88l-156 154z"/><path d="M332 308h390a32 32 0 0 0 0-64H332a32 32 0 0 0 0 64zM332 501h390a32 32 0 0 0 0-64H332a32 32 0 1 0 0 64zM527 630H332a32 32 0 1 0 0 64h195a32 32 0 0 0 0-64z"/></svg>';
       list.innerHTML = records.map(function(r) {
@@ -2611,10 +2608,10 @@
     }
     function filterHistory() { applyFilters(); }
     function applyFilters() {
-      var records = AppState.history;
       var type = AppState._filterType, q = (document.getElementById('historySearch').value || '').toLowerCase();
+      var records = AppState.history;
       if (type && type !== 'all') records = records.filter(function(r) { return r.type === type; });
-      if (q) records = records.filter(function(r) { return r.type.indexOf(q) !== -1; });
+      if (q) records = records.filter(function(r) { return (r.type||'').indexOf(q) !== -1; });
       renderHistory(records);
     }
 
@@ -2631,8 +2628,7 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function() { renderHistory(AppState.history); });
-    if (AppState.history.length) renderHistory(AppState.history);
+    document.addEventListener('DOMContentLoaded', function() { renderHistory(); });
     updateRemainDisplay();
     (function(){var g=[document.getElementById('fg1'),document.getElementById('fg2')];var f=document.getElementById('focusFrame');if(!g[0]||!g[1])return;var i=0;function s(){var tg=g[i],ot=g[(i+1)%2];ot.style.filter='blur(4px)';ot.style.opacity='.5';tg.style.filter='';tg.style.opacity='';var r=tg.getBoundingClientRect();f.style.left=(r.left-4)+'px';f.style.top=(r.top-4)+'px';f.style.width=(r.width+8)+'px';f.style.height=(r.height+8)+'px';f.classList.add('active');i=(i+1)%2}setInterval(s,2000);s()})();
     console.log('shuorenhua loaded');
