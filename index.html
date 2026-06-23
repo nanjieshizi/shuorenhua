@@ -2414,7 +2414,6 @@
     // === 登录 ===
     function showLoginErr(msg) { var el = document.getElementById('loginErr'); if(el) el.textContent = msg; }
     function toggleLogin() { if(AppState.isLoggedIn) { var dd = document.getElementById('loginDD'); dd.classList.toggle('show'); } else openLogin(); }
-    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度'; var b=document.getElementById('loginSubmitBtn'); b.textContent='登录'; b.disabled=false; showLoginErr(''); }
     function closeLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
     async function doLogin() {
       var e = document.getElementById('loginEmail').value.trim(), p = document.getElementById('loginPass').value.trim();
@@ -2452,15 +2451,22 @@
       updateRemainDisplay();
     }
     // 检测重置密码链接
-    (function(){ var h = location.hash; if(h.indexOf('type=recovery')!==-1||h.indexOf('error=access')!==-1){ document.getElementById('loginOverlay').classList.add('active'); document.getElementById('resetCard').style.display='block'; document.querySelector('.login-card:not(#resetCard)').style.display='none'; } })();
+    (function(){ var h = location.hash; if(h.indexOf('type=recovery')!==-1){ document.getElementById('loginOverlay').classList.add('active'); document.getElementById('resetCard').style.display='block'; document.querySelector('.login-card:not(#resetCard)').style.display='none'; location.hash = ''; } })();
     async function doResetPassword() {
       var p = document.getElementById('resetPass').value.trim();
       if(p.length < 6) { document.getElementById('resetErr').textContent = '密码至少6位'; return; }
       var b = document.getElementById('resetBtn'); b.disabled = true; b.textContent = '重置中...';
       var r = await SB.auth.updateUser({ password: p });
       if(r.error) { document.getElementById('resetErr').textContent = '重置失败: ' + r.error.message; b.disabled = false; b.textContent = '确认重置'; return; }
-      alert('密码重置成功，请重新登录');
-      location.hash = ''; closeLogin();
+      alert('密码重置成功，请重新登录'); closeLogin();
+    }
+    function openLogin() {
+      document.getElementById('loginOverlay').classList.add('active');
+      document.querySelector('.login-card:not(#resetCard)').style.display = 'block';
+      document.getElementById('resetCard').style.display = 'none';
+      document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value='';
+      document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度';
+      var b=document.getElementById('loginSubmitBtn'); b.textContent='登录'; b.disabled=false; showLoginErr('');
     }
     document.addEventListener('click', function(e) { if(!e.target.closest('.login-wrap')) document.getElementById('loginDD').classList.remove('show'); });
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
