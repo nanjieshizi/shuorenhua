@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     if (!plan || !price || !userId) return res.status(400).json({ error: '参数不全' });
 
     const ZPAY_KEY = process.env.ZPAY_KEY || 'NdZYyu1J5d5OiGoDPOJyJSFUkVp5Ok1E';
-    const ZPAY_PID = process.env.ZPAY_APP || '2088442553483738';
+    const ZPAY_PID = process.env.ZPAY_APP || '2026062222321815';
     const NOTIFY_URL = 'https://shuorenhua-6pv4.vercel.app/api/zpay-notify';
     const RETURN_URL = 'https://shuorenhua-6pv4.vercel.app';
 
