@@ -868,7 +868,13 @@
     .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .login-forgot { display: block; text-align: center; margin-top: 14px; font-size: 12px; color: var(--slate-400); cursor: pointer; }
     .login-forgot:hover { color: var(--red-p); }
+    .login-err { font-size: 12px; color: #DC2626; margin: 4px 0 0; min-height: 0; }
     .login-note { text-align: center; margin-top: 20px; margin-bottom: 0; font-size: 11px; color: var(--slate-300); }
+    .login-dropdown { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: #fff; border: 1px solid var(--slate-200); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); overflow: hidden; z-index: 99; }
+    .login-dropdown.show { display: block; }
+    .login-dropdown a { display: block; padding: 10px 18px; font-size: 13px; color: var(--slate-600); cursor: pointer; white-space: nowrap; }
+    .login-dropdown a:hover { background: var(--slate-50); }
+    .login-dropdown .dd-logout { color: #DC2626; }
     /* =====================================
        Results Section
     ===================================== */
@@ -1473,7 +1479,12 @@
       <a href="#" onclick="navigateTo('results');return false">分析报告</a>
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
       <a href="#" onclick="navigateTo('pricing');return false">收费</a>
-      <a href="#" class="btn-login" id="btnLogin" onclick="event.preventDefault();toggleLogin()">登录</a>
+      <div class="login-wrap" style="position:relative">
+        <a href="#" class="btn-login" id="btnLogin" onclick="event.preventDefault();toggleLogin()">登录</a>
+        <div class="login-dropdown" id="loginDD">
+          <a onclick="confirmLogout()" class="dd-logout">退出登录</a>
+        </div>
+      </div>
       <span class="nav-indicator" id="navInd"></span>
     </div>
   </nav>
@@ -1530,6 +1541,7 @@
       <p id="loginMsg" style="color:var(--slate-400);font-size:13px;margin-bottom:20px">登录后可跨设备同步记录与额度</p>
       <input type="email" id="loginEmail" placeholder="邮箱地址" autocomplete="email">
       <input type="password" id="loginPass" placeholder="密码" autocomplete="current-password" style="margin-top:12px">
+      <p class="login-err" id="loginErr"></p>
       <button class="login-btn" id="loginSubmitBtn" onclick="doLogin()">登录</button>
       <a class="login-forgot" onclick="resetPassword()">忘记密码？</a>
       <p class="login-note">首次登录将自动创建账户</p>
@@ -2391,40 +2403,46 @@
     function toggleExport() { document.getElementById('exportMenu').classList.toggle('show'); }
 
     // === 登录 ===
-    function toggleLogin() { if(AppState.isLoggedIn) logout(); else openLogin(); }
-    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度'; document.getElementById('loginSubmitBtn').textContent='登录'; }
+    function showLoginErr(msg) { var el = document.getElementById('loginErr'); if(el) el.textContent = msg; }
+    function toggleLogin() { if(AppState.isLoggedIn) { var dd = document.getElementById('loginDD'); dd.classList.toggle('show'); } else openLogin(); }
+    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度'; document.getElementById('loginSubmitBtn').textContent='登录'; showLoginErr(''); }
     function closeLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
     async function doLogin() {
       var e = document.getElementById('loginEmail').value.trim(), p = document.getElementById('loginPass').value.trim();
-      if(!e||!p||e.indexOf('@')===-1) { alert('请输入邮箱和密码'); return; }
-      if(p.length < 6) { alert('密码至少6位'); return; }
+      showLoginErr('');
+      if(!e||!p||e.indexOf('@')===-1) { showLoginErr('请输入正确的邮箱地址'); return; }
+      if(p.length < 6) { showLoginErr('密码不能少于6位'); return; }
       var b = document.getElementById('loginSubmitBtn'); b.disabled = true; b.textContent = '登录中...';
       var r = await SB.auth.signInWithPassword({ email: e, password: p });
       if(r.error) {
-        // 用户不存在则自动注册
         r = await SB.auth.signUp({ email: e, password: p });
-        if(r.error) { alert('登录失败: ' + r.error.message); b.disabled = false; b.textContent = '登录'; return; }
-        if(!r.data.session) { alert('注册成功！请查收邮箱验证邮件后登录。'); b.disabled = false; b.textContent = '登录'; return; }
+        if(r.error) { showLoginErr(r.error.message.indexOf('already')!==-1?'密码错误':'登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
+        if(!r.data.session) { showLoginErr('请查收邮箱验证邮件后登录'); b.disabled = false; b.textContent = '登录'; return; }
       }
-      if(!r.data || !r.data.user) { alert('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
+      if(!r.data || !r.data.user) { showLoginErr('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
       AppState.userId = r.data.user.id; AppState.isLoggedIn = true;
-      b.textContent = '登录成功'; document.getElementById('loginMsg').textContent = '已登录: ' + e;
+      showLoginErr(''); document.getElementById('loginMsg').textContent = '已登录: ' + e;
       document.getElementById('btnLogin').textContent = e.split('@')[0];
       updateRemainDisplay();
       setTimeout(closeLogin, 800);
     }
     async function resetPassword() {
       var e = document.getElementById('loginEmail').value.trim();
-      if(!e||e.indexOf('@')===-1) { alert('请先输入邮箱地址'); return; }
+      if(!e||e.indexOf('@')===-1) { showLoginErr('请先输入邮箱地址'); return; }
       var r = await SB.auth.resetPasswordForEmail(e);
-      if(r.error) { alert('发送失败: ' + r.error.message); return; }
-      alert('重置邮件已发送至 ' + e + '，请查收邮箱');
+      if(r.error) { showLoginErr('发送失败，请稍后重试'); return; }
+      showLoginErr(''); alert('重置邮件已发送至 ' + e);
+    }
+    function confirmLogout() {
+      document.getElementById('loginDD').classList.remove('show');
+      if(confirm('确定退出登录吗？')) logout();
     }
     async function logout() {
       await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false;
       document.getElementById('btnLogin').textContent = '登录';
       updateRemainDisplay();
     }
+    document.addEventListener('click', function(e) { if(!e.target.closest('.login-wrap')) document.getElementById('loginDD').classList.remove('show'); });
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
 
     function buildExportDoc() {
