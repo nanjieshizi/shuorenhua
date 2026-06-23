@@ -2409,7 +2409,14 @@
       }, 100);
     }
 
-    function buyPlan(plan, words, price) { alert('支付功能即将上线，敬请期待！'); }
+    async function buyPlan(plan, words, price) {
+      if(!AppState.isLoggedIn) { openLogin(); return; }
+      try {
+        var r = await fetch('/api/zpay', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plan:plan,words:words,price:price,userId:AppState.userId}) });
+        var d = await r.json();
+        if(d.ok && d.pay_url) { window.location.href = d.pay_url; } else { alert('创建订单失败，请稍后重试'); }
+      } catch(e) { alert('支付服务暂不可用，请稍后重试'); }
+    }
 
     function toggleExport() { document.getElementById('exportMenu').classList.toggle('show'); }
 
