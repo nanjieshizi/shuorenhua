@@ -2401,11 +2401,12 @@
       var b = document.getElementById('loginSubmitBtn'); b.disabled = true; b.textContent = '登录中...';
       var r = await SB.auth.signInWithPassword({ email: e, password: p });
       if(r.error) {
-        if(r.error.message.indexOf('Invalid') !== -1 || r.error.message.indexOf('invalid') !== -1) {
-          r = await SB.auth.signUp({ email: e, password: p });
-          if(r.error) { alert('登录失败: ' + r.error.message); b.disabled = false; b.textContent = '登录'; return; }
-        } else { alert('登录失败: ' + r.error.message); b.disabled = false; b.textContent = '登录'; return; }
+        // 用户不存在则自动注册
+        r = await SB.auth.signUp({ email: e, password: p });
+        if(r.error) { alert('登录失败: ' + r.error.message); b.disabled = false; b.textContent = '登录'; return; }
+        if(!r.data.session) { alert('注册成功！请查收邮箱验证邮件后登录。'); b.disabled = false; b.textContent = '登录'; return; }
       }
+      if(!r.data || !r.data.user) { alert('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
       AppState.userId = r.data.user.id; AppState.isLoggedIn = true;
       b.textContent = '登录成功'; document.getElementById('loginMsg').textContent = '已登录: ' + e;
       document.getElementById('btnLogin').textContent = e.split('@')[0];
