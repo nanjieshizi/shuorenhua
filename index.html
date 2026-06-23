@@ -1754,24 +1754,24 @@
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: generateUUID(), isLoggedIn: false };
     if(SB) (async function(){
       try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
-      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
+      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; useCloudQuota = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
     })();
 
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
     function addLocalUsage(c) { var k = getWeekKey(), n = getLocalUsage() + c; localStorage.setItem('wu', JSON.stringify({wk:k,n:n})); }
 
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
+    var useCloudQuota = false;
     async function getWeeklyUsage() {
-      if(AppState.userId){ try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).maybeSingle(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } else if(!r.data) { } } catch(e){} }
+      if(useCloudQuota && AppState.isLoggedIn && SB){ try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).maybeSingle(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } } catch(e){} }
       return getLocalUsage();
     }
     async function addWeeklyUsage(count) {
       var prev = await getWeeklyUsage(); var u = prev + count;
-      if(AppState.userId){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}, {onConflict:'id'}); } catch(e){} }
+      if(useCloudQuota && AppState.isLoggedIn && SB){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}, {onConflict:'id'}); } catch(e){} }
       addLocalUsage(count);
     }
     async function updateRemainDisplay() {
-      var el = document.getElementById('remainWords'); if(el){ var u = await getWeeklyUsage(); el.textContent = Math.max(0, 5000 - u); }
       var r = 5000 - (await getWeeklyUsage()), contracts = Math.floor(r / 1000);
       var nt = document.getElementById('nqText'), tip = document.getElementById('nqTip'), ft = document.getElementById('modalRemain');
       if(nt) nt.textContent = Math.max(0, r).toLocaleString() + ' 字';
@@ -2405,7 +2405,7 @@
     // === 登录 ===
     function showLoginErr(msg) { var el = document.getElementById('loginErr'); if(el) el.textContent = msg; }
     function toggleLogin() { if(AppState.isLoggedIn) { var dd = document.getElementById('loginDD'); dd.classList.toggle('show'); } else openLogin(); }
-    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度'; document.getElementById('loginSubmitBtn').textContent='登录'; showLoginErr(''); }
+    function openLogin() { document.getElementById('loginOverlay').classList.add('active'); document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度'; var b=document.getElementById('loginSubmitBtn'); b.textContent='登录'; b.disabled=false; showLoginErr(''); }
     function closeLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
     async function doLogin() {
       var e = document.getElementById('loginEmail').value.trim(), p = document.getElementById('loginPass').value.trim();
@@ -2420,7 +2420,7 @@
         if(!r.data.session) { showLoginErr('请查收邮箱验证邮件后登录'); b.disabled = false; b.textContent = '登录'; return; }
       }
       if(!r.data || !r.data.user) { showLoginErr('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
-      AppState.userId = r.data.user.id; AppState.isLoggedIn = true;
+      AppState.userId = r.data.user.id; AppState.isLoggedIn = true; useCloudQuota = true;
       showLoginErr(''); document.getElementById('loginMsg').textContent = '已登录: ' + e;
       document.getElementById('btnLogin').textContent = e.split('@')[0];
       updateRemainDisplay();
@@ -2438,7 +2438,7 @@
       if(confirm('确定退出登录吗？')) logout();
     }
     async function logout() {
-      await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false;
+      await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false; useCloudQuota = false;
       document.getElementById('btnLogin').textContent = '登录';
       updateRemainDisplay();
     }
