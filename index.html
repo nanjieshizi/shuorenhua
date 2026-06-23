@@ -1319,11 +1319,7 @@
       width: 40px; height: 40px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
     }
-    .history-item .h-icon.hr { background: var(--red-plight); }
-    .history-item .h-icon.hb { background: #EFF6FF; }
-    .history-item .h-icon.hg { background: var(--green-bg); }
-    .history-item .h-icon.ha { background: var(--amber-bg); }
-    .history-item .h-icon.ho { background: #FFF7ED; }
+    .history-item .h-icon.h-doc { background: transparent; color: var(--slate-500); }
     .history-item .h-info { flex: 1; min-width: 0; }
     .history-item .h-info .h-title { font-size: 15px; font-weight: 600; color: var(--slate-800); }
     .history-item .h-info .h-sub { font-size: 12px; color: var(--slate-400); margin-top: 2px; }
@@ -1952,8 +1948,6 @@
       AppState.currentContractType = typeName;
       document.getElementById('result-title').textContent = typeName + '风险分析报告';
       document.getElementById('result-date').textContent = new Date().toISOString().slice(0, 10);
-      document.getElementById('result-clauses').textContent = '共' + results.clauses.length + '条条款';
-
       // 用原始文本替代 AI 分句，保留原文段落格式
       var rawText = AppState.originalText;
       var origParts = rawText.split('\n\n').filter(function(p) { return p.trim(); });
@@ -1968,6 +1962,9 @@
         return clause;
       });
       if (!displayClauses.length) displayClauses = results.clauses;
+      // 统计有问题的条款数（与数据看板一致）
+      var problemClauses = displayClauses.filter(function(c) { return c.annotations && c.annotations.length; }).length;
+      document.getElementById('result-clauses').textContent = '存在 ' + problemClauses + ' 条问题条款';
       // OCR/文件场景下标配匹配失败时兜底使用AI原始条款
       var matchedCnt = 0;
       displayClauses.forEach(function(c) { if (c.annotations) matchedCnt += c.annotations.length; });
@@ -2485,18 +2482,10 @@
       filterDiv.style.flexWrap = types.length > 4 ? 'nowrap' : '';
       if (!records.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
       empty.style.display = 'none';
-      var hsvg = {
-        '租房合同': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><path d="M9 1.5L1.5 7.5V15.5H6.5V10.5H11.5V15.5H16.5V7.5L9 1.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
-        '贷款协议': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><rect x="1.5" y="6" width="15" height="10.5" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6L9 1.5L16.5 6" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>',
-        '保险合同': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><path d="M9 1L14.5 4V8.5C14.5 11.8 11.9 14.8 9 16C6.1 14.8 3.5 11.8 3.5 8.5V4L9 1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
-        '劳动协议': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><rect x="3" y="4" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M3 8H15" stroke="currentColor" stroke-width="1.3"/></svg>',
-        '用户协议': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><path d="M5 2H12.5L15.5 5V14.5C15.5 15.3284 14.8284 16 14 16H5C4.17157 16 3.5 15.3284 3.5 14.5V3.5C3.5 2.67157 4.17157 2 5 2Z" stroke="currentColor" stroke-width="1.3"/></svg>',
-        '其他': '<svg viewBox="0 0 18 18" fill="none" width="16" height="16"><path d="M6 2H13L15.5 4.5V15C15.5 15.5523 15.0523 16 14.5 16H6C5.44772 16 5 15.5523 5 15V3C5 2.44772 5.44772 2 6 2Z" stroke="currentColor" stroke-width="1.3"/></svg>'
-      };
-      var iconMap = { '租房合同': 'hr', '贷款协议': 'hb', '保险合同': 'hg', '劳动协议': 'ho', '用户协议': 'ha', '其他': 'ha' };
+      var hsvg = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M807 0H248A152 152 0 0 0 96 152v721A152 152 0 0 0 248 1024h496l215-213V152A152 152 0 0 0 807 0zM160 872V152A88 88 0 0 1 248 64h559a88 88 0 0 1 88 88v576h-93a132 132 0 0 0-132 132v100H248a88 88 0 0 1-88-88zm576 72V858a68 68 0 0 1 68-68h88l-156 154z"/><path d="M332 308h390a32 32 0 0 0 0-64H332a32 32 0 0 0 0 64zM332 501h390a32 32 0 0 0 0-64H332a32 32 0 1 0 0 64zM527 630H332a32 32 0 1 0 0 64h195a32 32 0 0 0 0-64z"/></svg>';
       list.innerHTML = records.map(function(r) {
         var s = r.score >= 70 ? 's-high' : r.score >= 40 ? 's-medium' : 's-low';
-        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon ' + iconMap[r.type] + '">' + (hsvg[r.type] || hsvg['其他']) + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + r.total + '条条款</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
+        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon h-doc">' + hsvg + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + r.total + '条条款</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
       }).join('');
     }
 
