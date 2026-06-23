@@ -2414,7 +2414,11 @@
       try {
         var r = await fetch('/api/zpay', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plan:plan,words:words,price:price,userId:AppState.userId}) });
         var d = await r.json();
-        if(d.ok && d.pay_url) { window.location.href = d.pay_url; } else { alert('创建订单失败，请稍后重试'); }
+        if(d.ok && d.params) {
+          var form = document.createElement('form'); form.method = 'POST'; form.action = d.url; form.style.display = 'none';
+          for(var k in d.params) { var input = document.createElement('input'); input.name = k; input.value = d.params[k]; form.appendChild(input); }
+          document.body.appendChild(form); form.submit();
+        } else { alert('创建订单失败: ' + (d.error || '未知错误')); }
       } catch(e) { alert('支付服务暂不可用，请稍后重试'); }
     }
 
