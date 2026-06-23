@@ -970,9 +970,9 @@
       background: var(--slate-100); margin-bottom: 14px;
     }
     .dist-bar .bar-track .seg { height: 100%; width: 0%; transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .dist-bar .bar-track .seg.seg-red { background: #C026D3; }
+    .dist-bar .bar-track .seg.seg-red { background: #DB2777; }
     .dist-bar .bar-track .seg.seg-orange { background: #EA580C; }
-    .dist-bar .bar-track .seg.seg-blue { background: #4F46E5; }
+    .dist-bar .bar-track .seg.seg-blue { background: #2563EB; }
     .dist-bar .bar-track .seg.seg-amber { background: #059669; }
     .dist-bar .bar-labels {
       display: flex; flex-wrap: wrap; gap: 6px 18px;
@@ -1161,15 +1161,15 @@
     }
 
     /* Five-color highlights */
-    .hl-r { font-weight: 700; color: #A21CAF; background: linear-gradient(180deg, transparent 56%, rgba(192,38,211,0.14) 56%, rgba(192,38,211,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-r { font-weight: 700; color: #BE185D; background: linear-gradient(180deg, transparent 56%, rgba(219,39,119,0.14) 56%, rgba(219,39,119,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
     .hl-o { font-weight: 700; color: #C2410C; background: linear-gradient(180deg, transparent 56%, rgba(234,88,12,0.14) 56%, rgba(234,88,12,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
-    .hl-b { font-weight: 700; color: #4338CA; background: linear-gradient(180deg, transparent 56%, rgba(79,70,229,0.12) 56%, rgba(79,70,229,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
+    .hl-b { font-weight: 700; color: #1D4ED8; background: linear-gradient(180deg, transparent 56%, rgba(37,99,235,0.14) 56%, rgba(37,99,235,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
     .hl-a { font-weight: 700; color: #047857; background: linear-gradient(180deg, transparent 56%, rgba(5,150,105,0.14) 56%, rgba(5,150,105,0.14) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
     .hl-g { font-weight: 700; color: #0E7490; background: linear-gradient(180deg, transparent 56%, rgba(8,145,178,0.12) 56%, rgba(8,145,178,0.12) 82%, transparent 82%); padding: 0 2px; border-radius: 1px; cursor: pointer; }
     .hl-seq { font-size: 8px; font-weight: 700; vertical-align: super; line-height: 1; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1.2px solid currentColor; }
-    .hl-r.wavy-active { text-decoration: underline wavy #C026D3 2px; text-underline-offset: 5px; }
+    .hl-r.wavy-active { text-decoration: underline wavy #DB2777 2px; text-underline-offset: 5px; }
     .hl-o.wavy-active { text-decoration: underline wavy #EA580C 2px; text-underline-offset: 5px; }
-    .hl-b.wavy-active { text-decoration: underline wavy #4F46E5 2px; text-underline-offset: 5px; }
+    .hl-b.wavy-active { text-decoration: underline wavy #2563EB 2px; text-underline-offset: 5px; }
     .hl-a.wavy-active { text-decoration: underline wavy #059669 2px; text-underline-offset: 5px; }
     .hl-g.wavy-active { text-decoration: underline wavy #0891B2 2px; text-underline-offset: 5px; }
 
@@ -1192,9 +1192,9 @@
     .annot-card .ac-badge {
       font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px;
     }
-    .annot-card .ac-badge.b-red { background: #FDF2FE; color: #A21CAF; }
+    .annot-card .ac-badge.b-red { background: #FFF1F2; color: #BE185D; }
     .annot-card .ac-badge.b-orange { background: #FFF7ED; color: #C2410C; }
-    .annot-card .ac-badge.b-blue { background: #EEF2FF; color: #4338CA; }
+    .annot-card .ac-badge.b-blue { background: #EFF6FF; color: #1D4ED8; }
     .annot-card .ac-badge.b-amber { background: #ECFDF5; color: #047857; }
     .annot-card .ac-badge.b-green { background: #ECFEFF; color: #0E7490; }
 
@@ -1578,9 +1578,9 @@
               <div class="seg seg-amber" id="segAmber"></div>
             </div>
             <div class="bar-labels">
-              <span class="dl-item"><span class="dl-dot" style="background:#C026D3"></span>财务处罚<span class="dl-pct" id="pctHigh">0%</span></span>
+              <span class="dl-item"><span class="dl-dot" style="background:#DB2777"></span>财务处罚<span class="dl-pct" id="pctHigh">0%</span></span>
               <span class="dl-item"><span class="dl-dot" style="background:#EA580C"></span>合同陷阱<span class="dl-pct" id="pctMed">0%</span></span>
-              <span class="dl-item"><span class="dl-dot" style="background:#4F46E5"></span>权利限制<span class="dl-pct" id="pctBlue">0%</span></span>
+              <span class="dl-item"><span class="dl-dot" style="background:#2563EB"></span>权利限制<span class="dl-pct" id="pctBlue">0%</span></span>
               <span class="dl-item"><span class="dl-dot" style="background:#059669"></span>隐藏费用<span class="dl-pct" id="pctAmber">0%</span></span>
             </div>
           </div>
@@ -1767,6 +1767,7 @@
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
     function addLocalUsage(c) { var k = getWeekKey(), n = getLocalUsage() + c; localStorage.setItem('wu', JSON.stringify({wk:k,n:n})); }
 
+    function fixType(a) { var m = { '财务处罚':'red','合同陷阱':'orange','权利限制':'blue','隐藏费用':'amber' }; a.type = m[a.label] || a.type; return a; }
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
     async function getWeeklyUsage() {
       if(!AppState.isLoggedIn || !SB) return 0;
@@ -1904,14 +1905,14 @@
     function generateMockResults(type) {
       var clauses = [
         { num: 1, text: '第一条 合同期限\n\n甲方（用人单位）：XX市某某科技有限公司，统一社会信用代码：91110108XXXXXXXXXX，法定代表人：张总，注册地址：XX市XX区XX路XX号XX大厦XX层。乙方（劳动者）：刘先生，身份证号：[略]，户籍地址：[略]，现住址：[略]。根据《中华人民共和国劳动法》《中华人民共和国劳动合同法》及相关法律法规，甲乙双方本着平等自愿、协商一致的原则，签订本合同，共同遵照执行。本合同为固定期限劳动合同，自 20XX 年 X 月 X 日起至 20XX 年 X 月 X 日止，共 3 年。试用期为 6 个月，试用期包含在合同期内。试用期工资为转正后工资的 60%。试用期届满前，甲方有权根据乙方工作表现决定是否延长试用期，延长期限不超过 3 个月。试用期内，甲方可随时解除本合同且无需支付任何补偿，乙方不得提出异议。', annotations: [
-          { text: '试用期为 6 个月', type: 'red', label: '权利限制', level: '高', title: '试用期超期且工资过低', desc: '劳动合同法第20条规定试用期工资不得低于合同约定工资的80%或本单位同岗位最低档工资的80%，且不得低于当地最低工资标准。试用期工资60%严重低于法定标准。', suggest: '试用期工资应不低于转正后工资的80%，且不低于当地最低工资标准。' },
-          { text: '甲方可随时解除本合同且无需支付任何补偿', type: 'red', label: '合同陷阱', level: '高', title: '试用期随时解除权违法', desc: '劳动合同法第21条规定试用期解除需证明劳动者"不符合录用条件"，且该条件须事先明确告知并留存证据。随时解除且不支付补偿严重违法。', suggest: '删除该条款，严格按照劳动合同法规定的条件和程序解除合同，并依法支付经济补偿。' }
+          { text: '试用期为 6 个月', type: 'blue', label: '权利限制', level: '高', title: '试用期超期且工资过低', desc: '劳动合同法第20条规定试用期工资不得低于合同约定工资的80%或本单位同岗位最低档工资的80%，且不得低于当地最低工资标准。试用期工资60%严重低于法定标准。', suggest: '试用期工资应不低于转正后工资的80%，且不低于当地最低工资标准。' },
+          { text: '甲方可随时解除本合同且无需支付任何补偿', type: 'orange', label: '合同陷阱', level: '高', title: '试用期随时解除权违法', desc: '劳动合同法第21条规定试用期解除需证明劳动者"不符合录用条件"，且该条件须事先明确告知并留存证据。随时解除且不支付补偿严重违法。', suggest: '删除该条款，严格按照劳动合同法规定的条件和程序解除合同，并依法支付经济补偿。' }
         ] },
         { num: 2, text: '第二条 工作内容与工作地点\n\n乙方同意根据甲方工作需要，在技术研发岗位工作。甲方有权根据生产经营需要，单方面调整乙方的工作岗位、工作内容及工作地点，乙方应无条件服从。若不服从，视为严重违反规章制度，甲方可立即解除合同并不支付任何经济补偿。乙方的具体工作职责由甲方制定的《岗位说明书》确定，甲方有权随时修改《岗位说明书》而无需征得乙方同意。', annotations: [
           { text: '单方面调整乙方的工作岗位、工作内容及工作地点', type: 'blue', label: '权利限制', level: '中', title: '单方调岗调薪条款', desc: '劳动合同法第35条规定变更劳动合同内容需协商一致并采用书面形式。单方强制调岗并将不服从认定为严重违纪的行为，严重侵犯劳动者合法权益。', suggest: '删除单方调整权条款，改为"经双方协商一致可调整工作岗位及内容，并签订书面变更协议"。' }
         ] },
         { num: 3, text: '第三条 工作时间与休息休假\n\n甲方实行标准工时制，每日工作不超过 8 小时，每周工作不超过 40 小时。鉴于乙方岗位的特殊性，甲方安排加班的，乙方应无条件配合。加班费已包含在月工资中，甲方不再另行支付。乙方入职第一年不享有带薪年休假。自第二年起，年休假天数由甲方根据经营情况酌情安排，乙方不得强行申请。乙方请事假须提前 3 个工作日书面申请，事假期间不支付工资，且当月全勤奖、绩效奖金等全部扣除，另按日加扣 50 元"管理费"。', annotations: [
-          { text: '加班费已包含在月工资中', type: 'orange', label: '隐藏费用', level: '中', title: '加班费打包条款无效', desc: '劳动法第44条规定加班费必须按法定标准（150%/200%/300%）依法足额支付，不得预先"打包"计入工资。此条款实质上是变相剥夺劳动者的加班费。', suggest: '删除该条款，明确约定加班费按国家规定另行计算和支付，不得以任何形式"打包"进基本工资。' }
+          { text: '加班费已包含在月工资中', type: 'amber', label: '隐藏费用', level: '中', title: '加班费打包条款无效', desc: '劳动法第44条规定加班费必须按法定标准（150%/200%/300%）依法足额支付，不得预先"打包"计入工资。此条款实质上是变相剥夺劳动者的加班费。', suggest: '删除该条款，明确约定加班费按国家规定另行计算和支付，不得以任何形式"打包"进基本工资。' }
         ] },
         { num: 4, text: '第四条 劳动报酬\n\n乙方转正后月工资为人民币 8,000 元（税前）。工资结构为：基本工资 2,500 元 + 绩效工资 4,500 元 + 全勤奖 1,000 元。绩效工资的发放标准及考核办法由甲方单方面制定和修改，考核结果以甲方认定为准，乙方不得提出异议。甲方每月暂扣工资的 20% 作为"履约保证金"，累计扣满 6 个月为止。合同期满且乙方无违约行为的，该保证金在离职后 6 个月内分期无息返还。若乙方提前离职，保证金不予返还。如遇经营困难或资金周转问题，甲方有权延迟发放工资，最迟不超过 3 个月，此期间不支付任何利息或补偿。', annotations: [
           { text: '每月暂扣工资的 20%', type: 'red', label: '财务处罚', level: '高', title: '履约保证金违法克扣', desc: '劳动合同法第9条严禁用人单位以任何形式向劳动者收取押金或保证金。此条款每月扣工资20%作为"履约保证金"属于严重违法行为，无论以何种名目均不可为。', suggest: '删除履约保证金条款，已扣款项应立即全额退还劳动者，并支付占用期间的利息。' }
@@ -2009,7 +2010,7 @@
       var origParts = rawText.split('\n\n').filter(function(p) { return p.trim(); });
       if (origParts.length <= 1) origParts = rawText.split('\n').filter(function(p) { return p.trim(); });
       var allAnnots = [];
-      results.clauses.forEach(function(c) { if (c.annotations) allAnnots = allAnnots.concat(c.annotations); });
+      results.clauses.forEach(function(c) { if (c.annotations) c.annotations.forEach(function(a){ fixType(a); }); allAnnots = allAnnots.concat(c.annotations || []); });
       var displayClauses = origParts.map(function(para, i) {
         var clause = { num: i + 1, text: para, annotations: [] };
         allAnnots.forEach(function(a) {
@@ -2029,10 +2030,9 @@
       // 从实际显示的条款中统计标注数据
       var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0;
       displayClauses.forEach(function(c) {
-        if (c.annotations) c.annotations.forEach(function(a) {
-          if (a.level === '高') { high++; if (a.type === 'red') red++; }
-          else if (a.level === '轻微') { low++; if (a.type === 'amber') amber++; }
-          else { med++; if (a.type === 'orange') orange++; else if (a.type === 'blue') blue++; }
+        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
+          if (a.level === '高') high++; else if (a.level === '轻微') low++; else med++;
+          if (a.type === 'red') red++; else if (a.type === 'orange') orange++; else if (a.type === 'blue') blue++; else if (a.type === 'amber') amber++;
         });
       });
 
@@ -2145,7 +2145,7 @@
         var tSeqMap = {}, tSeqN = 0;
         clist.forEach(function(c) {
           var ci = allClausesRef.indexOf(c);
-          if (c.annotations) c.annotations.forEach(function(a, ai) {
+          if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
             if (currentFilter === 'all' || a.level === currentFilter) tSeqMap[ci + '-' + ai] = ++tSeqN;
           });
         });
@@ -2162,14 +2162,14 @@
       var gSeqMap = {}, gSeqN = 0;
       allShown.forEach(function(c) {
         var ci = allClausesRef.indexOf(c);
-        if (c.annotations) c.annotations.forEach(function(a, ai) {
+        if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
           if (currentFilter === 'all' || a.level === currentFilter) gSeqMap[ci + '-' + ai] = ++gSeqN;
         });
       });
       var hasAnnots = false;
       allShown.forEach(function(c) {
         var ci = allClausesRef.indexOf(c);
-        if (c.annotations) c.annotations.forEach(function(a, ai) {
+        if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
           if (currentFilter !== 'all' && a.level !== currentFilter) return;
           hasAnnots = true;
           var id = 'aid-' + (getClauseAidBase(ci) + ai);
@@ -2239,7 +2239,7 @@
     function buildClauseHTML(c, ci, seqMap) {
       var text = c.text;
       if (c.annotations) {
-        c.annotations.forEach(function(a, ai) {
+        c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
           var id = 'aid-' + (getClauseAidBase(ci) + ai);
           var key = ci + '-' + ai;
           var seq = seqMap && seqMap[key] ? '<sup class="hl-seq">' + seqMap[key] + '</sup>' : '';
@@ -2290,7 +2290,7 @@
       clauses.forEach(function(c) {
         var ci = allClausesRef.indexOf(c);
         if (c.annotations && c.annotations.length) {
-          c.annotations.forEach(function(a, ai) {
+          c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
             if (currentFilter === 'all' || a.level === currentFilter) seqMap[ci + '-' + ai] = ++seqN;
           });
         }
@@ -2308,7 +2308,7 @@
       clauses.forEach(function(c) {
         var ci = allClausesRef.indexOf(c);
         if (c.annotations && c.annotations.length) {
-          c.annotations.forEach(function(a, ai) {
+          c.annotations.forEach(function(a, ai) { fixType(a);  fixType(a); 
             if (currentFilter !== 'all' && a.level !== currentFilter) return;
             hasAnnots = true;
             var id = 'aid-' + (getClauseAidBase(ci) + ai);
@@ -2492,11 +2492,11 @@
       doc += '<div class="meta">分析日期：' + date + ' | 风险评分：' + score + ' 分 | 共 ' + clauses.length + ' 条条款</div>';
       clauses.forEach(function(c) {
         var txt = (c.text || '').replace(/\n/g, '<br>');
-        if (c.annotations) c.annotations.forEach(function(a) {
+        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
           txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
         });
         doc += '<div class="clause"><div class="clause-text">' + txt + '</div>';
-        if (c.annotations) c.annotations.forEach(function(a) {
+        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
           doc += '<div class="annot ' + (a.type||'red') + '"><strong>' + a.label + ' · ' + a.level + '风险：' + a.title + '</strong><br>' + a.desc + '<div class="suggest">建议：' + a.suggest + '</div></div>';
         });
         doc += '</div>';
