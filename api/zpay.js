@@ -17,8 +17,8 @@ export default async function handler(req, res) {
     const name = '说人话·' + ({ lite: '体验包', basic: '基础包', pro: '进阶包' })[plan] || plan;
     const money = price.toFixed(2);
 
-    // ZPay MD5 签名: pid + money + name + out_trade_no + notify_url + return_url + key
-    const signStr = ZPAY_PID + money + name + outTradeNo + NOTIFY_URL + RETURN_URL + ZPAY_KEY;
+    // ZPay MD5 签名格式: money=X&name=XXX&notify_url=XXX&out_trade_no=XXX&pid=XXX&return_url=XXX&type=alipay + KEY
+    const signStr = 'money=' + money + '&name=' + name + '&notify_url=' + NOTIFY_URL + '&out_trade_no=' + outTradeNo + '&pid=' + ZPAY_PID + '&return_url=' + RETURN_URL + '&type=alipay' + ZPAY_KEY;
     const sign = crypto.createHash('md5').update(signStr).digest('hex');
 
     return res.json({
