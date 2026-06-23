@@ -1683,6 +1683,7 @@
 
   <script>
     function navigateTo(page) {
+      if(!AppState.isLoggedIn && (page === 'results' || page === 'history')) { openLogin(); return; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
       if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } }
@@ -1744,7 +1745,7 @@
     var nav = document.getElementById('nav');
     window.addEventListener('scroll', function() { nav.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 
-    function openModal() { var o = document.getElementById('modalOverlay'); o.classList.remove('closing'); o.classList.add('visible'); document.body.style.overflow = 'hidden'; updateRemainDisplay(); }
+    function openModal() { if(!AppState.isLoggedIn) { openLogin(); return; } var o = document.getElementById('modalOverlay'); o.classList.remove('closing'); o.classList.add('visible'); document.body.style.overflow = 'hidden'; updateRemainDisplay(); }
     function closeModal() { var o = document.getElementById('modalOverlay'); o.classList.add('closing'); setTimeout(function() { o.classList.remove('visible','closing'); document.body.style.overflow = ''; }, 250); }
     function closeOnBackdrop(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
@@ -1754,26 +1755,27 @@
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: _hist, userId: generateUUID(), isLoggedIn: false };
     if(SB) (async function(){
       try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
-      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; useCloudQuota = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
+      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
     })();
 
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
     function addLocalUsage(c) { var k = getWeekKey(), n = getLocalUsage() + c; localStorage.setItem('wu', JSON.stringify({wk:k,n:n})); }
 
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
-    var useCloudQuota = false;
     async function getWeeklyUsage() {
-      if(useCloudQuota && AppState.isLoggedIn && SB){ try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).maybeSingle(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } } catch(e){} }
-      return getLocalUsage();
+      if(!AppState.isLoggedIn || !SB) return 0;
+      try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,week_start').eq('id',AppState.userId).maybeSingle(); if(r.data && r.data.week_start === k) return r.data.used; if(r.data && r.data.week_start !== k) { await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); } } catch(e){}
+      return 0;
     }
     async function addWeeklyUsage(count) {
-      var prev = await getWeeklyUsage(); var u = prev + count;
-      if(useCloudQuota && AppState.isLoggedIn && SB){ try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:u,week_start:getWeekKey()}, {onConflict:'id'}); } catch(e){} }
-      addLocalUsage(count);
+      if(!AppState.isLoggedIn || !SB) return;
+      var prev = await getWeeklyUsage(), k = getWeekKey();
+      try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:5000,used:prev+count,week_start:k}, {onConflict:'id'}); } catch(e){}
     }
     async function updateRemainDisplay() {
-      var r = 5000 - (await getWeeklyUsage()), contracts = Math.floor(r / 1000);
       var nt = document.getElementById('nqText'), tip = document.getElementById('nqTip'), ft = document.getElementById('modalRemain');
+      if(!AppState.isLoggedIn) { if(nt) nt.textContent = '***'; if(tip) tip.textContent = '未登录无法使用额度'; if(ft) ft.textContent = '请先登录后使用'; return; }
+      var r = 5000 - (await getWeeklyUsage()), contracts = Math.floor(r / 1000);
       if(nt) nt.textContent = Math.max(0, r).toLocaleString() + ' 字';
       if(tip) tip.textContent = contracts >= 1 ? '剩余余额大约还可分析 ' + contracts + ' 篇合同' : '剩余余额不足以分析一篇合同，请订阅套餐';
       if(ft) ft.textContent = contracts >= 1 ? ('本周剩余 ' + Math.max(0, r).toLocaleString() + ' 字，约 ' + contracts + ' 篇合同') : '余额不足，请订阅套餐获取更多额度';
@@ -2420,7 +2422,7 @@
         if(!r.data.session) { showLoginErr('请查收邮箱验证邮件后登录'); b.disabled = false; b.textContent = '登录'; return; }
       }
       if(!r.data || !r.data.user) { showLoginErr('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
-      AppState.userId = r.data.user.id; AppState.isLoggedIn = true; useCloudQuota = true;
+      AppState.userId = r.data.user.id; AppState.isLoggedIn = true;
       showLoginErr(''); document.getElementById('loginMsg').textContent = '已登录: ' + e;
       document.getElementById('btnLogin').textContent = e.split('@')[0];
       updateRemainDisplay();
@@ -2438,7 +2440,7 @@
       if(confirm('确定退出登录吗？')) logout();
     }
     async function logout() {
-      await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false; useCloudQuota = false;
+      await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false;
       document.getElementById('btnLogin').textContent = '登录';
       updateRemainDisplay();
     }
