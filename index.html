@@ -1546,6 +1546,13 @@
       <a class="login-forgot" onclick="resetPassword()">忘记密码？</a>
       <p class="login-note">首次登录将自动创建账户</p>
     </div>
+    <div class="login-card" id="resetCard" onclick="event.stopPropagation()" style="display:none">
+      <h3>重置密码</h3>
+      <p style="color:var(--slate-400);font-size:13px;margin-bottom:20px">请输入新密码</p>
+      <input type="password" id="resetPass" placeholder="新密码（至少6位）" autocomplete="new-password">
+      <p class="login-err" id="resetErr"></p>
+      <button class="login-btn" id="resetBtn" onclick="doResetPassword()">确认重置</button>
+    </div>
   </div>
 
   <div class="page page-results section-hidden" id="page-results">
@@ -2443,6 +2450,17 @@
       await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false;
       document.getElementById('btnLogin').textContent = '登录';
       updateRemainDisplay();
+    }
+    // 检测重置密码链接
+    (function(){ var h = location.hash; if(h.indexOf('type=recovery')!==-1||h.indexOf('error=access')!==-1){ document.getElementById('loginOverlay').classList.add('active'); document.getElementById('resetCard').style.display='block'; document.querySelector('.login-card:not(#resetCard)').style.display='none'; } })();
+    async function doResetPassword() {
+      var p = document.getElementById('resetPass').value.trim();
+      if(p.length < 6) { document.getElementById('resetErr').textContent = '密码至少6位'; return; }
+      var b = document.getElementById('resetBtn'); b.disabled = true; b.textContent = '重置中...';
+      var r = await SB.auth.updateUser({ password: p });
+      if(r.error) { document.getElementById('resetErr').textContent = '重置失败: ' + r.error.message; b.disabled = false; b.textContent = '确认重置'; return; }
+      alert('密码重置成功，请重新登录');
+      location.hash = ''; closeLogin();
     }
     document.addEventListener('click', function(e) { if(!e.target.closest('.login-wrap')) document.getElementById('loginDD').classList.remove('show'); });
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
