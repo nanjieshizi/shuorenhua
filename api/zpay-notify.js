@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (!meta.userId || !meta.words) return res.send('fail');
 
     const supabaseUrl = 'https://wvnwpradfjwjpzodsznp.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bndwcmFkZmp3anB6b2Rzem5wIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjA4Mzg3NSwiZXhwIjoyMDk3NjU5ODc1fQ.NcPMcz631x1HD5DFmK5Sg1nQ0kQMCvPJOOKVdxOt6q8';
+    const supabaseKey = 'sb_secret_Q6kEs-7drjf_epEeh_wj1A_53byg2VC';
 
     // 查当前 quota
     const qRes = await fetch(supabaseUrl + '/rest/v1/quotas?id=eq.' + meta.userId + '&select=quota,used', {
