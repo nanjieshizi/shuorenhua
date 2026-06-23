@@ -1001,7 +1001,14 @@
     }
     .stat-card .sc-label {
       font-size: 12px; color: var(--slate-400); margin-top: 6px; font-weight: 500;
+      position: relative;
     }
+    .stat-card .sc-tip {
+      display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: #fff; font-size: 11px; font-weight: 400; padding: 6px 12px;
+      border-radius: 6px; white-space: nowrap; z-index: 99; pointer-events: none;
+    }
+    .stat-card:hover .sc-tip { display: block; }
 
 
 
@@ -1537,9 +1544,9 @@
         </div>
       </div>
       <div class="dash-stats-row">
-        <div class="stat-card"><span class="sc-num" style="color:#EF4444" id="statHigh">0</span><span class="sc-label">高风险</span></div>
-        <div class="stat-card"><span class="sc-num" style="color:#F97316" id="statMed">0</span><span class="sc-label">中风险</span></div>
-        <div class="stat-card"><span class="sc-num" style="color:#D97706" id="statLow">0</span><span class="sc-label" style="color:#D97706">轻微风险</span></div>
+        <div class="stat-card"><span class="sc-num" style="color:#EF4444" id="statHigh">0</span><span class="sc-label">高风险<span class="sc-tip">违反法律法规、霸王条款、严重损害合法权益</span></span></div>
+        <div class="stat-card"><span class="sc-num" style="color:#F97316" id="statMed">0</span><span class="sc-label">中风险<span class="sc-tip">隐藏陷阱、不公平约定、不合理限制权利</span></span></div>
+        <div class="stat-card"><span class="sc-num" style="color:#D97706" id="statLow">0</span><span class="sc-label" style="color:#D97706">轻微风险<span class="sc-tip">法律擦边、不利条款、模糊歧义、预警提示</span></span></div>
       </div>
     </div>
     <div class="compare-section-header fade-target"><div class="compare-section-label">合同条款逐条分析</div><div class="compare-filters" id="riskFilters"><button onclick="filterByRisk('all')" class="active">全部</button><button onclick="filterByRisk('高')">高风险</button><button onclick="filterByRisk('中')">中风险</button><button onclick="filterByRisk('轻微')">轻微风险</button></div><button class="fs-toggle" onclick="toggleFullscreen()"><svg viewBox="0 0 16 16" fill="none"><path d="M2 6V2H6M10 2H14V6M14 10V14H10M6 14H2V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>全屏</button></div>
