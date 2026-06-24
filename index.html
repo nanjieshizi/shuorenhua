@@ -1770,22 +1770,31 @@
     function fixType(a) { var m = { '财务处罚':'red','合同陷阱':'orange','权利限制':'blue','隐藏费用':'amber' }; a.type = m[a.label] || a.type; return a; }
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
     async function getQuotaData() {
-      if(!AppState.isLoggedIn || !SB) return { used: 0, limit: 5000 };
-      try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,quota,week_start').eq('id',AppState.userId).maybeSingle();
-        if(r.data){ var limit = r.data.quota || r.data.weekly_limit || 5000; if(r.data.week_start === k) return { used: r.data.used || 0, limit: limit }; await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId); return { used: 0, limit: limit }; }
+      if(!AppState.isLoggedIn || !SB) return { used: 0, freeLimit: 5000, purchased: 0 };
+      try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,quota,weekly_limit,week_start').eq('id',AppState.userId).maybeSingle();
+        if(r.data){
+          var freeL = r.data.weekly_limit || 5000, purch = r.data.quota || 0;
+          if(r.data.week_start === k) return { used: r.data.used || 0, freeLimit: freeL, purchased: purch };
+          await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId);
+          return { used: 0, freeLimit: freeL, purchased: purch };
+        }
       } catch(e){}
-      return { used: 0, limit: 5000 };
+      return { used: 0, freeLimit: 5000, purchased: 0 };
     }
-    async function getWeeklyUsage() { var d = await getQuotaData(); return d.used; }
     async function addWeeklyUsage(count) {
       if(!AppState.isLoggedIn || !SB) return;
       var d = await getQuotaData(), k = getWeekKey();
-      try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:d.limit,used:d.used+count,quota:d.limit,week_start:k}, {onConflict:'id'}); } catch(e){}
+      // 优先消耗购买额度
+      var newPurch = d.purchased, newUsed = d.used, rem = count;
+      if(newPurch > 0) { var deduct = Math.min(newPurch, rem); newPurch -= deduct; rem -= deduct; }
+      if(rem > 0) newUsed += rem;
+      try { await SB.from('quotas').upsert({id:AppState.userId,weekly_limit:d.freeLimit,used:newUsed,quota:newPurch,week_start:k}, {onConflict:'id'}); } catch(e){}
     }
+    async function getWeeklyUsage() { var d = await getQuotaData(); return d.used + d.purchased; }
     async function updateRemainDisplay() {
       var nt = document.getElementById('nqText'), tip = document.getElementById('nqTip'), ft = document.getElementById('modalRemain');
       if(!AppState.isLoggedIn) { if(nt) nt.textContent = '***'; if(tip) tip.textContent = '未登录无法使用额度'; if(ft) ft.textContent = '请先登录后使用'; return; }
-      var d = await getQuotaData(), r = d.limit - d.used, contracts = Math.floor(r / 1000);
+      var d = await getQuotaData(), r = d.freeLimit - d.used + d.purchased, contracts = Math.floor(r / 1000);
       if(nt) nt.textContent = Math.max(0, r).toLocaleString() + ' 字';
       if(tip) tip.textContent = contracts >= 1 ? '剩余余额大约还可分析 ' + contracts + ' 篇合同' : '剩余余额不足以分析一篇合同，请订阅套餐';
       if(ft) ft.textContent = contracts >= 1 ? ('本周剩余 ' + Math.max(0, r).toLocaleString() + ' 字，约 ' + contracts + ' 篇合同') : '余额不足，请订阅套餐获取更多额度';
@@ -1958,9 +1967,9 @@
 
       // 字数限制检查
       var wordCount = text.replace(/\s/g, '').length;
-      var used = getWeeklyUsage();
-      if (used + wordCount > 5000 && text !== '房屋租赁合同示例') {
-        alert('本周免费额度仅剩 ' + Math.max(0, 5000 - used) + ' 字，当前合同 ' + wordCount + ' 字。请精简内容或下周再试。');
+      var q = await getQuotaData(), total = q.freeLimit - q.used + q.purchased;
+      if (wordCount > total && text !== '房屋租赁合同示例') {
+        alert('额度不足！剩余 ' + total + ' 字，当前合同 ' + wordCount + ' 字。请订阅套餐获取更多额度。');
         btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return;
       }
 
