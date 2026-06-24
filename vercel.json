@@ -5,6 +5,7 @@
   "functions": {
     "api/analyze.js": { "maxDuration": 60 },
     "api/zpay.js": { "maxDuration": 30 },
-    "api/zpay-notify.js": { "maxDuration": 30 }
+    "api/zpay-notify.js": { "maxDuration": 30 },
+    "api/zpay-test.js": { "maxDuration": 30 }
   }
 }
