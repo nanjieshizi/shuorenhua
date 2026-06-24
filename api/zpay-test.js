@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
     });
     const qData = await qRes.json();
-    const cur = (qData[0] && qData[0].quota) || 5000;
+    const cur = (qData[0] && qData[0].quota) || 0;
 
     // 加 25000
     await fetch(supabaseUrl + '/rest/v1/quotas?id=eq.' + user, {

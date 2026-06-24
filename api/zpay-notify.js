@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
     });
     const qData = await qRes.json();
-    const currentQuota = (qData[0] && qData[0].quota) || 5000;
+    const currentQuota = (qData[0] && qData[0].quota) || 0;
 
     // 更新 quota
     await fetch(supabaseUrl + '/rest/v1/quotas?id=eq.' + meta.userId, {
