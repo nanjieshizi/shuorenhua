@@ -1459,6 +1459,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+.fb-overlay{display:none;position:fixed;inset:0;z-index:1001;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.fb-overlay.active{display:flex}
+.fb-card{background:#fff;border-radius:20px;padding:32px;width:420px;max-width:90vw;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.12)}
+.fb-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;border:none;background:var(--slate-100);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--slate-400)}
+.fb-close:hover{background:var(--slate-200);color:var(--slate-600)}
+.fb-close svg{width:14px;height:14px}
+.fb-card h3{font-size:18px;font-weight:700;color:var(--slate-900);margin-bottom:4px}
+.fb-card p{font-size:13px;color:var(--slate-400);margin-bottom:20px}
+.fb-card textarea{width:100%;height:120px;padding:12px;border:1.5px solid var(--slate-200);border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box}
+.fb-card textarea:focus{outline:none;border-color:var(--red-p)}
+.fb-card input{width:100%;padding:12px;border:1.5px solid var(--slate-200);border-radius:10px;font-family:inherit;font-size:14px;margin-top:10px;box-sizing:border-box}
+.fb-card input:focus{outline:none;border-color:var(--red-p)}
+.fb-submit{width:100%;padding:12px;border:none;border-radius:10px;background:var(--slate-900);color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px}
+.fb-submit:hover{background:var(--slate-700)}
+.fb-submit:disabled{opacity:.5;cursor:not-allowed}
+.fb-float{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--slate-900);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;z-index:100;transition:transform .2s}
+.fb-float:hover{transform:scale(1.08)}
+.fb-float svg{width:20px;height:20px}
+</style>
 </head>
 <body>
 
@@ -2490,6 +2510,17 @@
       document.getElementById('loginMsg').textContent='登录后可跨设备同步记录与额度';
       var b=document.getElementById('loginSubmitBtn'); b.textContent='登录'; b.disabled=false; showLoginErr('');
     }
+    // 反馈
+    function openFeedback(){ document.getElementById('fbOverlay').classList.add('active'); document.getElementById('fbContent').value=''; document.getElementById('fbEmail').value=''; document.getElementById('fbErr').textContent=''; document.getElementById('fbDone').style.display='none'; }
+    function closeFeedback(){ document.getElementById('fbOverlay').classList.remove('active'); }
+    async function submitFeedback(){
+      var c=document.getElementById('fbContent').value.trim(), e=document.getElementById('fbEmail').value.trim();
+      if(!c){ document.getElementById('fbErr').textContent='请输入反馈内容'; return; }
+      var b=document.querySelector('.fb-submit'); b.disabled=true; b.textContent='提交中...';
+      if(SB) try{ await SB.from('feedback').insert({user_id:AppState.isLoggedIn?AppState.userId:null,content:c,email:e||null}); }catch(err){}
+      b.disabled=false; b.textContent='提交反馈'; document.getElementById('fbDone').style.display='block';
+      setTimeout(closeFeedback,1500);
+    }
     document.addEventListener('click', function(e) { if(!e.target.closest('.login-wrap')) document.getElementById('loginDD').classList.remove('show'); });
     document.addEventListener('click', function(e) { if (!e.target.closest('.export-wrap')) document.getElementById('exportMenu').classList.remove('show'); });
 
@@ -2656,5 +2687,18 @@
     (function(){var g=[document.getElementById('fg1'),document.getElementById('fg2')];var f=document.getElementById('focusFrame');if(!g[0]||!g[1])return;var i=0;function s(){var tg=g[i],ot=g[(i+1)%2];ot.style.filter='blur(4px)';ot.style.opacity='.5';tg.style.filter='';tg.style.opacity='';var r=tg.getBoundingClientRect();f.style.left=(r.left-4)+'px';f.style.top=(r.top-4)+'px';f.style.width=(r.width+8)+'px';f.style.height=(r.height+8)+'px';f.classList.add('active');i=(i+1)%2}setInterval(s,2000);s()})();
     console.log('shuorenhua loaded');
   </script>
+<button class="fb-float" onclick="openFeedback()" title="意见反馈"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M18 2H2v12h4v4l4-4h8V2z"/><path d="M6 7h8M6 10h5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+<div class="fb-overlay" id="fbOverlay" onclick="if(event.target===this)closeFeedback()">
+  <div class="fb-card" onclick="event.stopPropagation()">
+    <button class="fb-close" onclick="closeFeedback()"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    <h3>意见反馈</h3>
+    <p>告诉我们你的建议或遇到的问题</p>
+    <textarea id="fbContent" placeholder="请输入反馈内容..."></textarea>
+    <input type="email" id="fbEmail" placeholder="邮箱（选填，方便回复）">
+    <div id="fbErr" style="color:#DC2626;font-size:12px;margin-top:4px"></div>
+    <button class="fb-submit" onclick="submitFeedback()">提交反馈</button>
+    <div id="fbDone" style="display:none;text-align:center;color:#10B981;font-weight:600;margin-top:14px">✓ 感谢反馈！</div>
+  </div>
+</div>
 </body>
 </html>
