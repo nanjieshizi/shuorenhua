@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (!meta.userId || !meta.words) return res.send('fail');
 
     const supabaseUrl = 'https://wvnwpradfjwjpzodsznp.supabase.co';
-    const supabaseKey = 'sb_secret_Q6kEs-7drjf_epEeh_wj1A_53byg2VC';
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY || '';
 
     // 查当前 quota
     const qRes = await fetch(supabaseUrl + '/rest/v1/quotas?id=eq.' + meta.userId + '&select=quota,used', {
