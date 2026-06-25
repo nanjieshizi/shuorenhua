@@ -2651,7 +2651,8 @@
       var hsvg = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M807 0H248A152 152 0 0 0 96 152v721A152 152 0 0 0 248 1024h496l215-213V152A152 152 0 0 0 807 0zM160 872V152A88 88 0 0 1 248 64h559a88 88 0 0 1 88 88v576h-93a132 132 0 0 0-132 132v100H248a88 88 0 0 1-88-88zm576 72V858a68 68 0 0 1 68-68h88l-156 154z"/><path d="M332 308h390a32 32 0 0 0 0-64H332a32 32 0 0 0 0 64zM332 501h390a32 32 0 0 0 0-64H332a32 32 0 1 0 0 64zM527 630H332a32 32 0 1 0 0 64h195a32 32 0 0 0 0-64z"/></svg>';
       list.innerHTML = records.map(function(r) {
         var s = r.score >= 70 ? 's-high' : r.score >= 40 ? 's-medium' : 's-low';
-        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon h-doc">' + hsvg + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + (r.total || 0) + '条问题</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
+        var hCount = r.total; if(r.clauses && hCount > (r.clauses.length||0)) { hCount = 0; r.clauses.forEach(function(c){ if(c.annotations) hCount += c.annotations.length; }); }
+        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon h-doc">' + hsvg + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + (hCount || 0) + '条问题</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
       }).join('');
     }
 
