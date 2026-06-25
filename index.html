@@ -2048,8 +2048,13 @@
       var rawText = AppState.originalText;
       var origParts = rawText.split('\n\n').filter(function(p) { return p.trim(); });
       if (origParts.length <= 1) origParts = rawText.split('\n').filter(function(p) { return p.trim(); });
+      // 从 AI 原始标注数据中统计（不受段落匹配影响）
+      var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0;
       var allAnnots = [];
-      results.clauses.forEach(function(c) { if (c.annotations) c.annotations.forEach(function(a){ fixType(a); }); allAnnots = allAnnots.concat(c.annotations || []); });
+      results.clauses.forEach(function(c) { if (c.annotations) c.annotations.forEach(function(a){ fixType(a); allAnnots.push(a); if (a.level === '高') high++; else if (a.level === '轻微') low++; else med++; if (a.type === 'red') red++; else if (a.type === 'orange') orange++; else if (a.type === 'blue') blue++; else if (a.type === 'amber') amber++; }); });
+      document.getElementById('result-clauses').textContent = '共查出 ' + (high + med + low) + ' 条问题';
+
+      // 段落匹配仅用于渲染，不影响统计
       var displayClauses = origParts.map(function(para, i) {
         var clause = { num: i + 1, text: para, annotations: [] };
         allAnnots.forEach(function(a) {
@@ -2057,21 +2062,9 @@
         });
         return clause;
       });
-      if (!displayClauses.length) displayClauses = results.clauses;
-      document.getElementById('result-clauses').textContent = '共查出 ' + (high + med + low) + ' 条问题';
-      // OCR/文件场景下标配匹配失败时兜底使用AI原始条款
       var matchedCnt = 0;
       displayClauses.forEach(function(c) { if (c.annotations) matchedCnt += c.annotations.length; });
-      if (allAnnots.length > 0 && matchedCnt === 0) displayClauses = results.clauses;
-
-      // 从实际显示的条款中统计标注数据
-      var high = 0, med = 0, low = 0, red = 0, orange = 0, blue = 0, amber = 0;
-      displayClauses.forEach(function(c) {
-        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
-          if (a.level === '高') high++; else if (a.level === '轻微') low++; else med++;
-          if (a.type === 'red') red++; else if (a.type === 'orange') orange++; else if (a.type === 'blue') blue++; else if (a.type === 'amber') amber++;
-        });
-      });
+      if (!displayClauses.length || (allAnnots.length > 0 && matchedCnt === 0)) displayClauses = results.clauses;
 
       document.getElementById('statHigh').textContent = high;
       document.getElementById('statMed').textContent = med;
