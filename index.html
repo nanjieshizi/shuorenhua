@@ -2058,9 +2058,7 @@
         return clause;
       });
       if (!displayClauses.length) displayClauses = results.clauses;
-      // 统计有问题的条款数（与数据看板一致）
-      var problemClauses = displayClauses.filter(function(c) { return c.annotations && c.annotations.length; }).length;
-      document.getElementById('result-clauses').textContent = '存在 ' + problemClauses + ' 条问题条款';
+      document.getElementById('result-clauses').textContent = '共查出 ' + (high + med + low) + ' 条问题';
       // OCR/文件场景下标配匹配失败时兜底使用AI原始条款
       var matchedCnt = 0;
       displayClauses.forEach(function(c) { if (c.annotations) matchedCnt += c.annotations.length; });
@@ -2107,7 +2105,7 @@
 
       animateScore(results.score);
       renderCompareView(displayClauses);
-      if (AppState.originalText) saveToHistory(typeName, results.score, high, med, low, displayClauses.length, displayClauses);
+      if (AppState.originalText) saveToHistory(typeName, results.score, high, med, low, high + med + low, displayClauses);
       setTimeout(alignAnnotations, 200);
       if (window.innerWidth < 900) setTimeout(function() { document.getElementById('compareRight').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
     }
@@ -2550,7 +2548,8 @@
       doc += '.annot.red{border-left-color:#C026D3}.annot.orange{border-left-color:#EA580C}.annot.blue{border-left-color:#4F46E5}.annot.amber{border-left-color:#059669}.annot.green{border-left-color:#0891B2}';
       doc += '.suggest{margin-top:6px;color:#64748b;font-size:12px}</style>';
       doc += '<h1>' + title + ' · 风险分析报告</h1>';
-      doc += '<div class="meta">分析日期：' + date + ' | 风险评分：' + score + ' 分 | 共 ' + clauses.length + ' 条条款</div>';
+      var eAnnots = 0; clauses.forEach(function(c){ if(c.annotations) eAnnots += c.annotations.length; });
+      doc += '<div class="meta">分析日期：' + date + ' | 风险评分：' + score + ' 分 | 共查出 ' + eAnnots + ' 条问题</div>';
       clauses.forEach(function(c) {
         var txt = (c.text || '').replace(/\n/g, '<br>');
         if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
@@ -2659,7 +2658,7 @@
       var hsvg = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M807 0H248A152 152 0 0 0 96 152v721A152 152 0 0 0 248 1024h496l215-213V152A152 152 0 0 0 807 0zM160 872V152A88 88 0 0 1 248 64h559a88 88 0 0 1 88 88v576h-93a132 132 0 0 0-132 132v100H248a88 88 0 0 1-88-88zm576 72V858a68 68 0 0 1 68-68h88l-156 154z"/><path d="M332 308h390a32 32 0 0 0 0-64H332a32 32 0 0 0 0 64zM332 501h390a32 32 0 0 0 0-64H332a32 32 0 1 0 0 64zM527 630H332a32 32 0 1 0 0 64h195a32 32 0 0 0 0-64z"/></svg>';
       list.innerHTML = records.map(function(r) {
         var s = r.score >= 70 ? 's-high' : r.score >= 40 ? 's-medium' : 's-low';
-        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon h-doc">' + hsvg + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + r.total + '条条款</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
+        return '<div class="history-item" onclick="viewHistory(' + r.id + ')"><div class="h-icon h-doc">' + hsvg + '</div><div class="h-info"><div class="h-title">' + r.type + '</div><div class="h-sub">' + r.date + ' · ' + (r.total || 0) + '条问题</div></div><div class="h-score ' + s + '">' + r.score + '</div><div class="h-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>';
       }).join('');
     }
 
