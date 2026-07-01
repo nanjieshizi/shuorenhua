@@ -73,6 +73,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      white-space: nowrap;
       background: rgba(248,250,252,0.72);
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -133,10 +134,12 @@
     @media (max-width: 768px) { .nav-quota .nq-hint { display: none; } }
 
     .btn-login {
-      display: inline-block; padding: 8px 20px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
       background: var(--slate-900); color: #fff !important;
-      font-weight: 600 !important; font-size: 13px !important;
+      font-weight: 700 !important; font-size: 15px !important;
       cursor: pointer; transition: all 0.2s; text-decoration: none;
+      flex-shrink: 0; text-transform: uppercase;
     }
     .btn-login:hover { background: var(--slate-700) !important; }
 
@@ -1672,7 +1675,7 @@
       <a href="#" onclick="navigateTo('history');return false">历史记录</a>
       <a href="#" onclick="navigateTo('pricing');return false">收费</a>
       <div class="login-wrap" style="position:relative">
-        <a href="#" class="btn-login" id="btnLogin" onclick="event.preventDefault();toggleLogin()">登录</a>
+        <a href="#" class="btn-login" id="btnLogin" onclick="event.preventDefault();toggleLogin()"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
         <div class="login-dropdown" id="loginDD">
           <a onclick="confirmLogout()" class="dd-logout">退出登录</a>
         </div>
@@ -1959,7 +1962,7 @@
     var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: [], userId: generateUUID(), isLoggedIn: false };
     if(SB) (async function(){
       try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
-      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.split('@')[0]; } } catch(e){}
+      try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.charAt(0).toUpperCase(); } } catch(e){}
     })();
 
     function getLocalUsage() { var k = getWeekKey(), d = JSON.parse(localStorage.getItem('wu') || '{}'); return d.wk === k ? d.n : 0; }
@@ -2764,7 +2767,7 @@
       if(!r.data || !r.data.user) { showLoginErr('登录失败，请重试'); b.disabled = false; b.textContent = '登录'; return; }
       AppState.userId = r.data.user.id; AppState.isLoggedIn = true;
       showLoginErr(''); document.getElementById('loginMsg').textContent = '已登录: ' + e;
-      document.getElementById('btnLogin').textContent = e.split('@')[0];
+      document.getElementById('btnLogin').textContent = e.charAt(0).toUpperCase();
       updateRemainDisplay();
       setTimeout(closeLogin, 800);
     }
@@ -2781,7 +2784,7 @@
     }
     async function logout() {
       await SB.auth.signOut(); AppState.userId = generateUUID(); AppState.isLoggedIn = false;
-      document.getElementById('btnLogin').textContent = '登录';
+      document.getElementById('btnLogin').innerHTML = '<svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
       updateRemainDisplay();
     }
     // 检测重置密码链接
