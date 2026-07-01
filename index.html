@@ -8,7 +8,7 @@
   <meta name="keywords" content="合同分析,AI审合同,合同审查,租房合同陷阱,劳动合同风险,合同条款翻译,法律AI,合同风险检测">
   <link rel="canonical" href="https://shuorenhua-6pv4.vercel.app">
   <meta property="og:title" content="说人话 — AI 合同审查分析工具">
-  <meta property="og:description" content="上传合同，AI自动标出风险条款。免费使用，每周5000字。">
+  <meta property="og:description" content="上传合同，AI自动标出风险条款。免费使用，每周3000字。">
   <meta property="og:type" content="website">
   <meta name="google-site-verification" content="I-oxYHqkv1Bcz6au756sId1nfsxA9THpMYq7Z8SDqpk" />
 <meta name="robots" content="index, follow">
@@ -1667,7 +1667,7 @@
     <div class="nav-links">
       <div class="nav-quota" id="navQuota" onclick="navigateTo('pricing');return false">
         <svg viewBox="0 0 1024 1024" width="15" height="15" fill="#94a3b8"><path d="M64 66v304l40-1c13-111 102-187 153-199 50-13 148 1 148 1s-1 625-1 669c0 44-60 63-60 63l-79 1-1 56h493v-54h-90c-41-4-66-57-66-57l1-684s62-12 151 5c89 16 164 204 164 204h40V66H64z"/></svg>
-        <span class="nq-text" id="nqText">5,000 字</span>
+        <span class="nq-text" id="nqText">3,000 字</span>
         <span class="nq-hint">剩余额度</span>
         <span class="nq-tip" id="nqTip">剩余余额大约还可分析 5 篇合同</span>
       </div>
@@ -1692,7 +1692,7 @@
       <p class="hero-sub">AI 自动标出风险条款、违约金陷阱、自动续费套路。<br/>拍照或粘贴合同，一分钟看懂再签。</p>
       <div class="hero-actions">
         <button class="btn-primary glare-hover" style="--gh-angle:120deg;--gh-rgba:rgba(255,255,255,0.15);--gh-duration:0.7s;--gh-size:300% 300%" onclick="openModal()">上传合同<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
-        <div class="hero-free"><span class="dot"></span>每周免费 5,000 字，周一重置</div>
+        <div class="hero-free"><span class="dot"></span>每周免费 3,000 字，周一重置</div>
       </div>
       <div class="hero-tags">
         <a><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 2L2 7V14H6V10H10V14H14V7L8 2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg> 租房合同</a>
@@ -1725,7 +1725,7 @@
       <div class="modal-panel active" id="panel-paste"><div class="ta-wrap"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea><button class="ta-clear" onclick="clearTextarea()" title="清空内容"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
       <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持 PDF、JPG、PNG</div><div class="up-warn">图片识别率较低，建议使用文本粘贴或 PDF 上传</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button><div class="ai-progress" id="aiProgress"><div class="ai-bar" id="aiBar"></div></div>
-      <div class="modal-footer"><div class="free-count"><span class="dot"></span><span id="modalRemain">每周免费 5,000 字</span></div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
+      <div class="modal-footer"><div class="free-count"><span class="dot"></span><span id="modalRemain">每周免费 3,000 字</span></div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
     </div>
   </div>
 
@@ -1836,7 +1836,7 @@
         <div class="plan-price">免费</div>
         <div class="plan-desc">适合初次体验</div>
         <ul class="plan-features">
-          <li>5,000 字 / 周</li>
+          <li>3,000 字 / 周</li>
           <li>周一自动重置</li>
           <li>基础合同分析</li>
         </ul>
@@ -1884,7 +1884,8 @@
 
   <script>
     function navigateTo(page) {
-      if(!AppState.isLoggedIn && (page === 'results' || page === 'history')) { openLogin(); return; }
+      if(!AppState.isLoggedIn && page === 'history') { openLogin(); return; }
+      if(!AppState.isLoggedIn && page === 'results') { showDemoResults(); return; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
       if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } if (page === 'history') { renderHistory(); } }
@@ -1971,16 +1972,16 @@
     function fixType(a) { var m = { '财务处罚':'red','合同陷阱':'orange','权利限制':'blue','隐藏费用':'amber' }; a.type = m[a.label] || a.type; return a; }
     function getWeekKey() { var n = new Date(), d = n.getDay() || 7; n.setDate(n.getDate() - d + 1); return n.toISOString().slice(0, 10); }
     async function getQuotaData() {
-      if(!AppState.isLoggedIn || !SB) return { used: 0, freeLimit: 5000, purchased: 0 };
+      if(!AppState.isLoggedIn || !SB) return { used: 0, freeLimit: 3000, purchased: 0 };
       try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,quota,weekly_limit,week_start').eq('id',AppState.userId).maybeSingle();
         if(r.data){
-          var freeL = +r.data.weekly_limit || 5000, purch = +r.data.quota || 0;
+          var freeL = +r.data.weekly_limit || 3000, purch = +r.data.quota || 0;
           if(r.data.week_start === k) return { used: +r.data.used || 0, freeLimit: freeL, purchased: purch };
           await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId);
           return { used: 0, freeLimit: freeL, purchased: purch };
         }
       } catch(e){}
-      return { used: 0, freeLimit: 5000, purchased: 0 };
+      return { used: 0, freeLimit: 3000, purchased: 0 };
     }
     async function addWeeklyUsage(count) {
       if(!AppState.isLoggedIn || !SB) return;
@@ -2207,6 +2208,38 @@
       AppState.isTranslating = false;
     }
 
+    function showDemoResults() {
+      AppState.isDemo = true;
+      var demoClauses = [
+        { num:1, text:"第一条：甲方将其位于XX市XX区XX路XX号XX室的房屋（建筑面积89平方米，两室一厅一卫）出租给乙方使用。租赁期限自2026年7月1日起至2027年6月30日止，共计12个月。月租金为人民币3,500元，采取押一付三方式支付，押金为人民币3,500元。", annotations:[
+          { text:"89平方米", type:"green", label:"注意核实", level:"轻微", title:"房屋面积以实测为准", desc:"合同中注明的面积通常为建筑面积而非使用面积，实际使用面积可能不足70㎡。根据《商品房屋租赁管理办法》，出租人应保证房屋符合约定用途。建议签约前实地测量使用面积并在合同中注明。", suggest:"在合同中补充'使用面积约XX平方米'，或以实测面积为准。" }
+        ]},
+        { num:2, text:"第二条：租赁期间，房屋内一切设施设备（包括但不限于空调、热水器、洗衣机、马桶、水龙头、门锁、窗户等）的维修费用由乙方承担。因设施自然老化或质量问题导致的损坏，乙方仍须按市场价赔偿。", annotations:[
+          { text:"维修费用由乙方承担", type:"red", label:"财务处罚", level:"高", title:"维修责任违法转嫁", desc:"将所有设施维修责任转嫁给承租人违反《民法典》第712条，出租人应当履行租赁物的维修义务。将自然老化和质量问题的维修也推给承租人，属于单方面加重对方责任的格式条款。", suggest:"维修责任应按法律规定划分：自然损耗由甲方承担，人为损坏由乙方承担。建议补充维修通知和响应时效。" },
+          { text:"按市场价赔偿", type:"orange", label:"合同陷阱", level:"中", title:"赔偿标准模糊", desc:"'市场价'一词过于模糊，甲方可任意解释。设施折旧后价值远低于新品价格，按市场新品价赔偿对乙方显失公平。建议按折旧后残值或维修成本计算。", suggest:"明确赔偿标准为'扣除折旧后的实际价值'或'合理的维修费用'。" }
+        ]},
+        { num:3, text:"第三条：乙方提前解除合同的，须支付月租金200%作为违约金，并赔偿甲方因此产生的全部损失（包括但不限于房屋空置期间的租金损失、中介费、清洁费等）。押金不予退还。", annotations:[
+          { text:"月租金200%", type:"red", label:"财务处罚", level:"高", title:"违约金比例违法", desc:"200%月租金（即7,000元）远超合理范围。根据《民法典》第585条，违约金不得超过实际损失的30%。法院通常支持的提前退租违约金为1-2个月租金，且需扣除押金。", suggest:"建议将违约金修改为1个月租金（3,500元），或不超过甲方实际损失的30%。" },
+          { text:"赔偿甲方因此产生的全部损失", type:"orange", label:"合同陷阱", level:"中", title:"赔偿责任无限扩大", desc:"'全部损失'加'包括但不限于'构成无限赔偿责任条款。根据《民法典》第584条，损失赔偿额不得超过违约方订立合同时可预见的损失。中介费、清洁费等为甲方固定经营成本，不应由乙方承担。", suggest:"限定赔偿范围为'直接且可预见的损失'，排除甲方经营成本。" },
+          { text:"押金不予退还", type:"amber", label:"隐藏费用", level:"中", title:"押金与违约金双重扣款", desc:"既收违约金又没收押金，构成重复处罚。押金的法定功能是抵扣欠费和损坏赔偿，不能直接没收。根据司法实践，违约金已覆盖甲方损失时，押金应全额退还。", suggest:"押金应在扣除实际欠费/损坏后返还，不能与违约金并用。建议明确'违约金从押金中抵扣，剩余部分退还'。" }
+        ]},
+        { num:4, text:"第四条：租赁期满或合同解除后，甲方有权在30个工作日内对房屋进行验收。验收合格后，押金于60个工作日内无息退还至乙方指定账户。", annotations:[
+          { text:"30个工作日内对房屋进行验收", type:"amber", label:"隐藏费用", level:"轻微", title:"验收周期过长", desc:"30个工作日≈42个自然日，仅为验收环节就长达一个半月。通常验房1-3天即可完成。过长的验收期可能是甲方拖延退押金的手段。", suggest:"验收应在退租后3-5个工作日内完成，双方当场签字确认验收结果。" },
+          { text:"押金于60个工作日内无息退还", type:"amber", label:"隐藏费用", level:"中", title:"押金退还周期极不合理", desc:"60个工作日≈84个自然日，加上30天验收期，乙方要等近4个月才能收到退款。北京、上海等地已出台政策要求押金在退租后3-7日内退还。长时间占用押金本质上是无息占用承租人资金。", suggest:"押金应在验收确认无异议后7个工作日内退还。建议注明逾期退还按日计付违约金。" }
+        ]},
+        { num:5, text:"第五条：因不可抗力（包括但不限于政府征收、拆迁、自然灾害、疫情封控等）导致合同无法继续履行的，双方互不承担违约责任，但乙方已支付的租金和押金不予退还。合同到期前乙方未书面提出不续租的，视为自动续租一年。", annotations:[
+          { text:"乙方已支付的租金和押金不予退还", type:"red", label:"财务处罚", level:"高", title:"不可抗力条款显失公平", desc:"不可抗力导致合同无法履行时，甲方没有任何损失却要没收乙方已付租金和押金，这是不当得利。根据《民法典》第533条情势变更原则和第563条合同解除规定，合同因不可抗力解除后，未使用的租金应退还，押金更应全额返还。", suggest:"不可抗力导致合同终止时，租金按实际使用天数结算，剩余部分及押金应全额退还。" },
+          { text:"合同到期前乙方未书面提出不续租的，视为自动续租一年", type:"orange", label:"合同陷阱", level:"中", title:"沉默视为同意陷阱", desc:"以乙方的沉默推定续租意愿，违反《民法典》第140条'沉默只有在法律规定、当事人约定或符合交易习惯时方可视为意思表示'。自动续租一年的条款未经乙方明确同意，侵犯了乙方的选择权。", suggest:"应改为'双方协商一致方可续租'，或至少改为'乙方未在期满前30日书面提出不续租的，按原条件续租，续租期为不定期'。" }
+        ]}
+      ];
+      var demoResult = {
+        title: "房屋租赁合同",
+        score: 72,
+        clauses: demoClauses
+      };
+      showResults(demoResult, "房屋租赁合同");
+    }
+
     function showResults(results, contractType) {
       AppState.currentResults = results;
       navigateTo('results');
@@ -2216,7 +2249,8 @@
       document.getElementById('page-results').style.display = '';
       var typeName = results.title || contractType;
       AppState.currentContractType = typeName;
-      document.getElementById('result-title').textContent = typeName + '风险分析报告';
+      document.getElementById('result-title').textContent = (AppState.isDemo ? '【案例参考】' : '') + typeName + '风险分析报告';
+      AppState.isDemo = false;
       document.getElementById('result-date').textContent = new Date().toISOString().slice(0, 10);
       // 用原始文本替代 AI 分句，保留原文段落格式
       var rawText = AppState.originalText;
@@ -2949,6 +2983,7 @@
     }
 
     async function resetAnalysis() {
+      if(!AppState.isLoggedIn) { openLogin(); return; }
       var text = AppState.originalText;
       if (!text && allClausesRef && allClausesRef.length) {
         text = allClausesRef.map(function(c) { return c.text; }).join('\n\n');
