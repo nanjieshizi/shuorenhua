@@ -1984,7 +1984,7 @@
       if(!AppState.isLoggedIn || !SB) return { used: 0, freeLimit: 3000, purchased: 0 };
       try { var k = getWeekKey(); var r = await SB.from('quotas').select('used,quota,weekly_limit,week_start').eq('id',AppState.userId).maybeSingle();
         if(r.data){
-          var freeL = +r.data.weekly_limit || 3000, purch = +r.data.quota || 0;
+          var freeL = 3000, purch = +r.data.quota || 0;
           if(r.data.week_start === k) return { used: +r.data.used || 0, freeLimit: freeL, purchased: purch };
           await SB.from('quotas').update({used:0,week_start:k}).eq('id',AppState.userId);
           return { used: 0, freeLimit: freeL, purchased: purch };
