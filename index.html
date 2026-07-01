@@ -664,29 +664,6 @@
 
     /* =====================================
     ===================================== */
-    @media (max-width: 900px) {
-      .hero {
-        flex-direction: column;
-        padding: 100px 20px 60px;
-        gap: 40px;
-        min-height: auto;
-      }
-      .hero-left { text-align: center; }
-      .hero-sub { margin-left: auto; margin-right: auto; }
-      .hero-actions { justify-content: center; }
-      .hero-tags { justify-content: center; }
-      .hero-trust { justify-content: center; }
-      .hero-right { min-height: 400px; width: 100%; }
-      .cards-stack { max-width: 360px; }
-      .nav-links a:not(.btn-login) { display: none; }
-      nav { padding: 14px 20px; }
-    }
-    @media (max-width: 480px) {
-      .hero-right { min-height: 320px; }
-      .cards-stack { max-width: 300px; }
-      .card { padding: 20px 16px; border-radius: 16px; }
-      .card-header { margin-bottom: 12px; padding-bottom: 10px; }
-    }
     /* =====================================
        Page Routing
     ===================================== */
@@ -1436,29 +1413,222 @@
     }
 
     /* =====================================
+       Mobile: Bottom Tab Bar
+    ===================================== */
+    .mobile-tab-bar {
+      display: none;
+    }
+    @media (max-width: 900px) {
+      .mobile-tab-bar {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+        background: rgba(248,250,252,0.92);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border-top: 1px solid var(--slate-200);
+        padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+        justify-content: space-around; align-items: flex-start;
+      }
+      .mobile-tab-bar .tab-item {
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+        font-size: 11px; font-weight: 500; color: var(--slate-400);
+        padding: 4px 0; cursor: pointer; text-decoration: none;
+        -webkit-tap-highlight-color: transparent; min-width: 56px;
+        transition: color 0.2s ease;
+      }
+      .mobile-tab-bar .tab-item.active { color: var(--red-p); }
+      .mobile-tab-bar .tab-item svg { width: 22px; height: 22px; }
+
+      /* Page bottom padding for tab bar */
+      body { padding-bottom: 72px; }
+    }
+
+    /* =====================================
        Responsive additions
     ===================================== */
     @media (max-width: 900px) {
-      .results-section, .history-section { padding: 60px 20px; }
-      .dashboard { padding: 28px 24px; }
-      .dash-top { flex-direction: column; gap: 32px; align-items: center; text-align: center; }
-      .dash-stats-row { grid-template-columns: repeat(2, 1fr); }
-      .compare-view { flex-direction: column; min-height: auto; overflow: visible; }
-      .compare-left { border-right: none; border-bottom: 1px solid var(--slate-100); max-height: 50vh; overflow-y: auto; }
-      .compare-right { width: 100%; max-height: none; padding: 24px 20px; }
-      .compare-right .cr-header { margin-bottom: 16px; }
-      .page-sheet { padding: 24px 20px 20px; }
-      .pagination-bar { margin-top: 16px; }
+      /* Navigation */
+      .nav-links a:not(.btn-login) { display: none; }
+      nav { padding: 12px 20px; }
+      .nav-logo { font-size: 17px; }
+      .nav-logo svg { width: 24px; height: 24px; }
+
+      /* Hero */
+      .hero {
+        flex-direction: column;
+        padding: 100px 20px 40px;
+        gap: 32px;
+        min-height: auto;
+      }
+      .hero-left { text-align: center; }
+      .hero-sub { margin-left: auto; margin-right: auto; font-size: 15px; }
+      .hero-actions { justify-content: center; flex-wrap: wrap; }
+      .hero-tags { justify-content: center; }
+      .hero-trust { justify-content: center; }
+      .hero-right { min-height: 360px; width: 100%; }
+      .cards-stack { max-width: 340px; }
+      .hero-title { font-size: clamp(30px, 8vw, 42px); line-height: 1.25; }
+      .hero-title span[style*="nowrap"] { white-space: normal !important; display: inline !important; }
+
+      /* Results — card flow */
+      .results-section, .history-section { padding: 80px 16px 100px; }
+      .dashboard { padding: 24px 20px; border-radius: 20px; margin-bottom: 24px; }
+      .dash-top { flex-direction: column; gap: 24px; align-items: center; text-align: center; padding-bottom: 24px; margin-bottom: 24px; }
+      .score-ring { width: 100px; height: 100px; }
+      .score-ring .score-num .sc-big { font-size: 28px; }
+      .dash-stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat-card { padding: 14px 8px; }
+      .stat-card .sc-num { font-size: 24px; }
+      .stat-card .sc-label { font-size: 11px; }
+      .stat-card .sc-tip { display: none !important; }
+
+      /* Compare view → block layout */
+      .compare-section-header { flex-wrap: wrap; gap: 8px; }
+      .compare-section-label { width: 100%; }
+      .compare-filters { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .compare-filters button { padding: 8px 16px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+      .fs-toggle { display: none !important; }
+
+      .compare-view { flex-direction: column; min-height: auto; overflow: visible; background: transparent; border: none; box-shadow: none; border-radius: 0; }
+      .compare-left { border-right: none; max-height: none; overflow-y: visible; background: transparent; }
+      .compare-right { display: none !important; }
+
+      /* Clause cards */
+      .page-sheet { aspect-ratio: auto; padding: 0; background: transparent; box-shadow: none; border-radius: 0; }
+      .cl-header { display: none; }
+      .page-footer { display: none; }
+      .c-clause {
+        display: block; background: #fff; border-radius: 14px;
+        border: 1px solid var(--slate-200); padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      }
+      .c-clause .c-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 22px; height: 22px; border-radius: 6px;
+        background: var(--slate-100); color: var(--slate-500);
+        font-size: 11px; font-weight: 700; margin-bottom: 8px;
+        font-family: 'Noto Sans SC', sans-serif;
+      }
+      .c-clause .c-text {
+        font-size: 15px; line-height: 1.85; word-break: break-word;
+      }
+
+      /* Annotations inline with clause */
+      .annot-card {
+        margin: 12px 0 0 0; border-radius: 10px; padding: 14px 16px;
+        background: var(--slate-50); border: 1px solid var(--slate-100);
+        animation: none; cursor: default;
+      }
+      .annot-card:hover { transform: none; box-shadow: none; }
+      .annot-card .ac-title { font-size: 14px; margin-bottom: 4px; }
+      .annot-card .ac-desc { font-size: 13px; line-height: 1.6; }
+      .annot-card .ac-suggest { max-height: none; padding: 10px 12px; margin-top: 8px; border-width: 1px; }
+      .annot-card .ac-tip { display: none !important; }
+      .annot-card .ac-seq { width: 20px; height: 20px; font-size: 11px; }
+      .annot-card .ac-badge { font-size: 11px; padding: 3px 8px; }
+      .annot-card .ac-level { font-size: 10px; padding: 2px 8px; }
+      .annot-card.highlighted {
+        border-color: #EF4444 !important;
+        box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
+        background: #FFF5F5;
+      }
+
+      /* Highlight text bigger on mobile */
+      .hl-seq { font-size: 10px; width: 16px; height: 16px; }
+
+      /* Pagination */
+      .pagination-bar { margin-top: 20px; margin-bottom: 8px; }
+      .pagination-bar .pg-btn { padding: 10px 20px; font-size: 14px; }
+      .pagination-bar .pg-info { font-size: 14px; }
+
+      /* Fullscreen — simplified single-page */
+      .fs-overlay.active { flex-direction: column; padding: 12px; gap: 12px; overflow-y: auto; }
+      .fs-overlay .fs-pages { flex: none; width: 100%; }
+      .fs-pages .page-sheet { width: 100%; height: auto; min-height: 60vh; padding: 20px; background: #fff; border-radius: 12px; border: 1px solid var(--slate-200); }
+      .fs-pages-row { flex-direction: column; gap: 12px; }
+      .fs-overlay .fs-right { width: 100%; height: auto; max-height: 40vh; border-radius: 12px; flex-shrink: 0; }
+      .fs-close { top: 16px; left: 16px; }
+
+      /* Results actions */
+      .results-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+      .results-actions button { justify-content: center; }
+      .export-wrap { display: flex; flex-direction: column; }
+      .export-menu { bottom: auto; top: 100%; margin-top: 6px; margin-bottom: 0; }
+
+      /* Modal */
+      .modal-card { padding: 28px 20px; border-radius: 20px; }
+      .modal-header { padding-right: 32px; }
+      .modal-header h2 { font-size: 20px; }
+      .modal-upload { padding: 28px 16px; }
+      .modal-submit { padding: 14px 24px; font-size: 15px; }
+
+      /* History */
+      .history-section { padding: 80px 16px 100px; }
+      .history-toolbar { flex-direction: column; gap: 10px; }
+      .history-toolbar .search-wrap { min-width: 0; width: 100%; }
+      .history-filters { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .history-filters button { flex-shrink: 0; }
+      .history-item { padding: 14px 16px; }
+      .history-item .h-info .h-title { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+      .history-item .h-score { font-size: 16px; padding: 3px 8px; }
+
+      /* Pricing */
+      .pricing-section { padding: 100px 24px 100px; min-height: auto; }
+      .pricing-header { margin-bottom: 40px; }
+      .pricing-header .section-title { font-size: 28px; }
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .plan-card { padding: 32px 24px; }
+      .plan-card:first-child { border-radius: 20px 0 0 0; }
+      .plan-card:nth-child(2) { border-radius: 0 20px 0 0; margin-right: 0; }
+      .plan-card:nth-child(3) { border-radius: 0 0 0 20px; }
+      .plan-card:last-child { border-radius: 0 0 20px 0; }
+      .plan-card.plan-popular { border-radius: 20px; margin: -12px -1px; padding: 40px 24px; }
+
+      /* Focus frame */
+      .focus-frame { display: none !important; }
     }
+
     @media (max-width: 480px) {
-      .results-section, .history-section { padding: 40px 16px; }
-      .dashboard { padding: 20px 16px; }
-      .dash-top { flex-direction: column; align-items: center; gap: 24px; }
-      .dash-stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .stat-card { padding: 14px 12px; }
-      .stat-card .sc-num { font-size: 22px; }
-      .page-sheet { padding: 20px 16px 16px; }
-      .pagination-bar .pg-btn { padding: 6px 14px; font-size: 12px; }
+      .hero { padding: 90px 16px 32px; gap: 24px; }
+      .hero-right { min-height: 300px; }
+      .cards-stack { max-width: 280px; }
+      .card { padding: 18px 14px; border-radius: 14px; }
+      .card-header { margin-bottom: 10px; padding-bottom: 8px; }
+      .hero-title { font-size: clamp(26px, 8vw, 32px); }
+      .hero-sub { font-size: 14px; }
+      .hero-actions { gap: 10px; }
+      .btn-primary { padding: 14px 28px; font-size: 15px; }
+      .hero-tags { gap: 6px; }
+      .hero-tags a { font-size: 11px; padding: 6px 10px; }
+
+      .results-section, .history-section { padding: 60px 12px 100px; }
+      .dashboard { padding: 18px 14px; }
+      .dash-top { gap: 20px; }
+      .dash-stats-row { gap: 6px; }
+      .stat-card { padding: 12px 6px; }
+      .stat-card .sc-num { font-size: 20px; }
+      .stat-card .sc-label { font-size: 10px; }
+      .pagination-bar .pg-btn { padding: 8px 16px; font-size: 13px; }
+
+      .c-clause { padding: 14px; border-radius: 12px; }
+      .c-clause .c-text { font-size: 14px; line-height: 1.75; }
+      .annot-card { padding: 12px 14px; }
+
+      .modal-card { padding: 24px 16px; }
+      .modal-panel textarea { min-height: 160px; font-size: 16px; }
+      .modal-tabs button { padding: 8px 14px; font-size: 13px; }
+      .modal-tabs button svg { width: 14px; height: 14px; margin-right: 4px; }
+
+      .pricing-section { padding: 80px 16px 100px; }
+      .pricing-grid { grid-template-columns: 1fr; gap: 12px; }
+      .plan-card, .plan-card:first-child, .plan-card:last-child, .plan-card:nth-child(2), .plan-card:nth-child(3) { border-radius: 16px; margin: 0; }
+      .plan-card.plan-popular { border-radius: 16px; margin: 0; padding: 36px 24px; }
+
+      .history-item .h-info .h-title { max-width: 140px; }
+
+      /* Feedback button above tab bar */
+      #fbFloat { bottom: 90px !important; }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1734,6 +1904,13 @@
       bar.style.transition = ''; bar.classList.add('show');
       window.scrollTo(0, 0);
       if (page === 'home') { setTimeout(alignAnnotations, 150); setTimeout(alignAnnotations, 400); }
+      // Sync mobile tab bar
+      var tabBar = document.getElementById('mobileTabBar');
+      if (tabBar) {
+        tabBar.querySelectorAll('.tab-item').forEach(function(t) { t.classList.remove('active'); });
+        var activeTab = tabBar.querySelector('.tab-item[onclick*="' + page + '"]');
+        if (activeTab) activeTab.classList.add('active');
+      }
     }
 
     var stack = document.getElementById('cardStack');
@@ -2100,7 +2277,6 @@
       renderCompareView(displayClauses);
       if (AppState.originalText) saveToHistory(typeName, results.score, high, med, low, high + med + low, displayClauses);
       setTimeout(alignAnnotations, 200);
-      if (window.innerWidth < 900) setTimeout(function() { document.getElementById('compareRight').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
     }
 
     function animateScore(target) {
@@ -2227,7 +2403,29 @@
     }
 
     function toggleFullscreen() {
-      if (!paginatedPages.length) return;
+      if (!allClausesRef.length) return;
+      if (window.innerWidth < 900) {
+        // Mobile: simplified single-page fullscreen
+        document.getElementById('nav').style.display = 'none';
+        var fs = document.getElementById('fsOverlay');
+        fs.classList.add('active'); document.body.style.overflow = 'hidden';
+        var pages = document.getElementById('fsPages');
+        var right = document.getElementById('fsRight');
+        pages.innerHTML = '<div class="fs-pages-row"><div class="page-sheet" style="width:100%;height:auto;min-height:80vh;padding:20px"><div class="page-body" id="fsPageBody"></div></div></div>';
+        right.innerHTML = '';
+        // Re-render the mobile card view inside fs
+        var origBody = document.getElementById('pageBody');
+        var fsBody = document.getElementById('fsPageBody');
+        if (fsBody && origBody) fsBody.innerHTML = origBody.innerHTML;
+        // Clone annotation functionality
+        setTimeout(function() {
+          var cards = fsBody.querySelectorAll('.annot-card');
+          cards.forEach(function(c) { c.setAttribute('onclick', 'event.stopPropagation();clickCard(this)'); });
+          var hls = fsBody.querySelectorAll('.wavy-target');
+          hls.forEach(function(h) { h.setAttribute('onclick', 'event.stopPropagation();clickHighlight(this)'); });
+        }, 50);
+        return;
+      }
       fsCurrentPage = currentPage;
       document.getElementById('nav').style.display = 'none';
       document.getElementById('fsOverlay').classList.add('active');
@@ -2253,9 +2451,8 @@
       });
       var filtered = getFilteredClauses();
       currentPage = 0;
-      if (!filtered.length) { paginatedPages = []; renderCurrentPage(); return; }
-      splitIntoPages(filtered);
-      renderCurrentPage();
+      if (!filtered.length) { paginatedPages = []; if (window.innerWidth < 900) { var body = document.getElementById('pageBody'); if (body) body.innerHTML = '<div class="annot-empty" style="padding:80px 20px;text-align:center;color:var(--slate-400)">该风险等级无匹配条款</div>'; } else renderCurrentPage(); return; }
+      if (window.innerWidth < 900) { renderMobileCards(allClausesRef); } else { splitIntoPages(filtered); renderCurrentPage(); }
     }
 
     function getClauseAidBase(ci) {
@@ -2381,6 +2578,105 @@
       next.disabled = currentPage >= paginatedPages.length - 1;
     }
 
+    function renderMobileCards(clauses) {
+      var body = document.getElementById('pageBody');
+      var right = document.getElementById('compareRight');
+      var footer = document.getElementById('pageFooter');
+      var prev = document.getElementById('pgPrev');
+      var next = document.getElementById('pgNext');
+      var info = document.getElementById('pgInfo');
+
+      // Hide right panel and footer via their containers
+      if (right) right.style.display = 'none';
+      if (footer) footer.style.display = 'none';
+
+      // Get filtered clauses
+      var filtered = currentFilter === 'all' ? clauses : clauses.filter(function(c) {
+        return c.annotations && c.annotations.some(function(a) { return a.level === currentFilter; });
+      });
+
+      if (!body || !filtered.length) {
+        if (body) body.innerHTML = '<div class="annot-empty" style="padding:80px 20px;text-align:center;color:var(--slate-400)">该风险等级无匹配条款</div>';
+        info.textContent = '0 / 0'; prev.disabled = true; next.disabled = true;
+        return;
+      }
+
+      // Paginate: group clauses into pages for mobile (simpler — fixed count per page)
+      var perPage = 5;
+      var pages = [];
+      for (var i = 0; i < filtered.length; i += perPage) {
+        pages.push(filtered.slice(i, i + perPage));
+      }
+
+      // Clamp current page
+      if (currentPage >= pages.length) currentPage = Math.max(0, pages.length - 1);
+      var pageClauses = pages[currentPage] || [];
+
+      // Build global seq map for current page
+      var seqMap = {}, seqN = 0;
+      pageClauses.forEach(function(c) {
+        var ci = allClausesRef.indexOf(c);
+        if (c.annotations && c.annotations.length) {
+          c.annotations.forEach(function(a, ai) { fixType(a); fixType(a);
+            if (currentFilter === 'all' || a.level === currentFilter) seqMap[ci + '-' + ai] = ++seqN;
+          });
+        }
+      });
+
+      // Render clauses as cards with inline annotations
+      body.innerHTML = pageClauses.map(function(c) {
+        var ci = allClausesRef.indexOf(c);
+        var text = c.text;
+        // Build highlighted text
+        if (c.annotations) {
+          c.annotations.forEach(function(a, ai) { fixType(a); fixType(a);
+            var id = 'aid-' + (getClauseAidBase(ci) + ai);
+            var key = ci + '-' + ai;
+            var seq = seqMap[key] ? '<sup class="hl-seq">' + seqMap[key] + '</sup>' : '';
+            var span = '<span class="hl-' + a.type[0] + ' wavy-target" data-aid="' + id + '" onclick="event.stopPropagation();clickHighlight(this)">' + seq + a.text + '</span>';
+            text = text.split(a.text).join(span);
+          });
+        }
+
+        // Build inline annotation cards
+        var annotsHTML = '';
+        if (c.annotations && c.annotations.length) {
+          c.annotations.forEach(function(a, ai) { fixType(a); fixType(a);
+            if (currentFilter !== 'all' && a.level !== currentFilter) return;
+            var id = 'aid-' + (getClauseAidBase(ci) + ai);
+            var pageSeq = seqMap[ci + '-' + ai];
+            annotsHTML += '<div class="annot-card type-' + a.type + '" id="' + id + '" onclick="event.stopPropagation();clickCard(this)" style="animation:none">'
+              + '<div class="ac-header">'
+              + '<span class="ac-seq">' + (pageSeq || '') + '</span>'
+              + '<span class="ac-badge b-' + a.type + '">' + a.label + '</span>'
+              + '<span class="ac-level l-' + (a.level === '高' ? 'high' : a.level === '轻微' ? 'low' : 'medium') + '">' + a.level + '风险</span>'
+              + '</div>'
+              + '<div class="ac-title">' + a.title + '</div>'
+              + '<div class="ac-desc">' + a.desc + '</div>'
+              + '<div class="ac-suggest" id="suggest-' + id + '"><span class="suggest-prefix">建议：</span>' + a.suggest + '</div>'
+              + '</div>';
+          });
+        }
+
+        return '<div class="c-clause">'
+          + '<span class="c-num">' + c.num + '</span>'
+          + '<span class="c-text">' + text + '</span>'
+          + annotsHTML
+          + '</div>';
+      }).join('');
+
+      // Pagination
+      info.textContent = (currentPage + 1) + ' / ' + pages.length;
+      prev.disabled = currentPage === 0;
+      next.disabled = currentPage >= pages.length - 1;
+      footer.style.display = '';
+      if (pages.length <= 1) {
+        prev.style.display = 'none'; next.style.display = 'none'; info.style.display = 'none';
+      } else {
+        prev.style.display = ''; next.style.display = ''; info.style.display = '';
+      }
+    }
+
     function clearHighlights() {
       document.querySelectorAll('.annot-card.highlighted').forEach(function(c) { c.classList.remove('highlighted'); });
       document.querySelectorAll('.wavy-active').forEach(function(s) { s.classList.remove('wavy-active'); });
@@ -2421,18 +2717,22 @@
     }
 
     function prevPage() {
-      if (currentPage > 0) { currentPage--; renderCurrentPage(); }
+      if (currentPage > 0) { currentPage--; if (window.innerWidth < 900) renderMobileCards(allClausesRef); else renderCurrentPage(); }
     }
     function nextPage() {
-      if (currentPage < paginatedPages.length - 1) { currentPage++; renderCurrentPage(); }
+      if (currentPage < (window.innerWidth < 900 ? (Math.ceil(getFilteredClauses().length / 5) || 1) : paginatedPages.length) - 1) { currentPage++; if (window.innerWidth < 900) renderMobileCards(allClausesRef); else renderCurrentPage(); }
     }
 
     function renderCompareView(clauses) {
       allClausesRef = clauses;
       currentPage = 0;
       setTimeout(function() {
-        splitIntoPages(clauses);
-        renderCurrentPage();
+        if (window.innerWidth < 900) {
+          renderMobileCards(clauses);
+        } else {
+          splitIntoPages(clauses);
+          renderCurrentPage();
+        }
       }, 100);
     }
 
@@ -2527,30 +2827,82 @@
       var date = document.getElementById('result-date').textContent;
       var score = document.getElementById('scoreNum').textContent;
       var clauses = allClausesRef || [];
-      var doc = '<style>*{margin:0;padding:0;box-sizing:border-box;font-family:"Noto Serif SC","Noto Sans SC",serif}';
-      doc += 'h1{font-size:22px;margin-bottom:6px;color:#0f172a}.meta{color:#94a3b8;font-size:12px;margin-bottom:28px}';
-      doc += '.clause{margin-bottom:20px;padding:10px 0;border-bottom:1px solid #f1f5f9}';
-      doc += '.clause-text{text-align:justify;font-size:14px;line-height:2.2;color:#334155}';
-      doc += '.hl{font-weight:700;padding:0 2px;border-radius:2px}';
-      doc += '.hl-r{color:#BE123C;background:rgba(225,29,72,.15)}';
-      doc += '.hl-o{color:#6D28D9;background:rgba(124,58,237,.15)}';
-      doc += '.hl-b{color:#1D4ED8;background:rgba(37,99,235,.12)}';
-      doc += '.hl-a{color:#B45309;background:rgba(217,119,6,.15)}';
-      doc += '.hl-g{color:#0F766E;background:rgba(13,148,136,.12)}';
-      doc += '.annot{margin:8px 0 8px 16px;padding:10px 14px;background:#f8fafc;border-left:3px solid #e2e8f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.8}';
-      doc += '.annot.red{border-left-color:#C026D3}.annot.orange{border-left-color:#EA580C}.annot.blue{border-left-color:#4F46E5}.annot.amber{border-left-color:#059669}.annot.green{border-left-color:#0891B2}';
-      doc += '.suggest{margin-top:6px;color:#64748b;font-size:12px}</style>';
-      doc += '<h1>' + title + ' · 风险分析报告</h1>';
+      var doc = '<style>*{margin:0;padding:0;box-sizing:border-box;font-family:"Noto Serif SC","Noto Sans SC",serif;color:#334155}';
+      doc += 'body{padding:40px 48px 60px}';
+      doc += '.report-h1{font-size:24px;font-weight:800;color:#0f172a;margin-bottom:4px;letter-spacing:-0.01em}';
+      doc += '.report-sub{font-size:13px;color:#94a3b8;margin-bottom:6px}';
+      doc += '.report-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:13px;color:#64748b;border-bottom:1px solid #e2e8f0;padding-bottom:20px;margin-bottom:24px}';
+      doc += '.meta-score{font-size:28px;font-weight:800;color:#0f172a}';
+      doc += '.meta-label{font-size:11px;color:#94a3b8}';
+      doc += '.clause{margin-bottom:24px;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;page-break-inside:avoid}';
+      doc += '.clause-num{display:inline-block;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:10px}';
+      doc += '.clause-text{text-align:justify;font-size:14px;line-height:2.1;color:#334155;margin-bottom:0}';
+      doc += '.hl{font-weight:700;padding:0 3px;border-radius:2px}';
+      doc += '.hl-r{color:#BE185D;background:rgba(219,39,119,0.14)}';
+      doc += '.hl-o{color:#C2410C;background:rgba(234,88,12,0.14)}';
+      doc += '.hl-b{color:#1D4ED8;background:rgba(37,99,235,0.12)}';
+      doc += '.hl-a{color:#047857;background:rgba(5,150,105,0.12)}';
+      doc += '.hl-g{color:#0E7490;background:rgba(8,145,178,0.12)}';
+      doc += '.annot-card{margin-top:14px;padding:14px 16px;border-radius:10px;border:1px solid #e2e8f0;page-break-inside:avoid}';
+      doc += '.annot-card.red{border-color:rgba(219,39,119,0.25);background:#FFF1F2}';
+      doc += '.annot-card.orange{border-color:rgba(234,88,12,0.25);background:#FFF7ED}';
+      doc += '.annot-card.blue{border-color:rgba(37,99,235,0.25);background:#EFF6FF}';
+      doc += '.annot-card.amber{border-color:rgba(5,150,105,0.25);background:#ECFDF5}';
+      doc += '.annot-card.green{border-color:rgba(8,145,178,0.25);background:#ECFEFF}';
+      doc += '.ac-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}';
+      doc += '.ac-seq{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid #94a3b8;color:#64748b;font-size:10px;font-weight:700;flex-shrink:0}';
+      doc += '.ac-badge{font-size:11px;font-weight:600;padding:2px 10px;border-radius:5px}';
+      doc += '.ac-badge.red{background:#FFF1F2;color:#BE185D}';
+      doc += '.ac-badge.orange{background:#FFF7ED;color:#C2410C}';
+      doc += '.ac-badge.blue{background:#EFF6FF;color:#1D4ED8}';
+      doc += '.ac-badge.amber{background:#ECFDF5;color:#047857}';
+      doc += '.ac-badge.green{background:#ECFEFF;color:#0E7490}';
+      doc += '.ac-level{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px}';
+      doc += '.ac-level.high{background:#FEF2F2;color:#DC2626}';
+      doc += '.ac-level.medium{background:#FFF7ED;color:#C2410C}';
+      doc += '.ac-level.low{background:#ECFDF5;color:#047857}';
+      doc += '.ac-title{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:6px;line-height:1.4}';
+      doc += '.ac-desc{font-size:13px;line-height:1.75;color:#64748b}';
+      doc += '.ac-suggest{margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;font-size:12px;line-height:1.7;color:#475569;border:1px solid #e2e8f0}';
+      doc += '.suggest-label{font-weight:700;color:#0f172a}</style>';
+
+      // Header
+      doc += '<div class="report-h1">' + title + '</div>';
+      doc += '<div class="report-sub">AI 合同风险分析报告</div>';
       var eAnnots = 0; clauses.forEach(function(c){ if(c.annotations) eAnnots += c.annotations.length; });
-      doc += '<div class="meta">分析日期：' + date + ' | 风险评分：' + score + ' 分 | 共查出 ' + eAnnots + ' 条问题</div>';
+      doc += '<div class="report-meta"><div><span class="meta-score">' + score + '</span> <span class="meta-label">/ 100 分</span></div><div>' + date + '</div><div>共查出 <b>' + eAnnots + '</b> 条问题</div></div>';
+
+      // Build global seq for all annotations
+      var gSeq = 0;
+      var seqMap = {};
       clauses.forEach(function(c) {
+        var ci = clauses.indexOf(c);
+        if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a); seqMap[ci + '-' + ai] = ++gSeq; });
+      });
+
+      // Clauses
+      clauses.forEach(function(c) {
+        var ci = clauses.indexOf(c);
         var txt = (c.text || '').replace(/\n/g, '<br>');
-        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
+        if (c.annotations) c.annotations.forEach(function(a) { fixType(a);
           txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
         });
-        doc += '<div class="clause"><div class="clause-text">' + txt + '</div>';
-        if (c.annotations) c.annotations.forEach(function(a) { fixType(a); 
-          doc += '<div class="annot ' + (a.type||'red') + '"><strong>' + a.label + ' · ' + a.level + '风险：' + a.title + '</strong><br>' + a.desc + '<div class="suggest">建议：' + a.suggest + '</div></div>';
+        doc += '<div class="clause">';
+        doc += '<span class="clause-num">第 ' + (ci + 1) + ' 条</span>';
+        doc += '<div class="clause-text">' + txt + '</div>';
+        if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a);
+          var s = seqMap[ci + '-' + ai];
+          var levelCN = a.level === '高' ? 'high' : a.level === '轻微' ? 'low' : 'medium';
+          doc += '<div class="annot-card ' + (a.type||'red') + '">'
+            + '<div class="ac-header">'
+            + '<span class="ac-seq">' + s + '</span>'
+            + '<span class="ac-badge ' + (a.type||'red') + '">' + a.label + '</span>'
+            + '<span class="ac-level ' + levelCN + '">' + a.level + '风险</span>'
+            + '</div>'
+            + '<div class="ac-title">' + a.title + '</div>'
+            + '<div class="ac-desc">' + a.desc + '</div>'
+            + '<div class="ac-suggest"><span class="suggest-label">建议：</span>' + a.suggest + '</div>'
+            + '</div>';
         });
         doc += '</div>';
       });
@@ -2687,7 +3039,7 @@
     (function(){var g=[document.getElementById('fg1'),document.getElementById('fg2')];var f=document.getElementById('focusFrame');if(!g[0]||!g[1])return;var i=0;function s(){var tg=g[i],ot=g[(i+1)%2];ot.style.filter='blur(4px)';ot.style.opacity='.5';tg.style.filter='';tg.style.opacity='';var r=tg.getBoundingClientRect();f.style.left=(r.left-4)+'px';f.style.top=(r.top-4)+'px';f.style.width=(r.width+8)+'px';f.style.height=(r.height+8)+'px';f.classList.add('active');i=(i+1)%2}setInterval(s,2000);s()})();
     console.log('shuorenhua loaded');
   </script>
-<div style="position:fixed;bottom:24px;right:24px;z-index:100;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onclick="openFeedback()" title="意见反馈"><div class="fb-float" style="position:static"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M18 2H2v12h4v4l4-4h8V2z"/><path d="M6 7h8M6 10h5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></div><span style="font-size:11px;color:var(--slate-400);font-weight:500">意见反馈</span></div>
+<div id="fbFloat" style="position:fixed;bottom:24px;right:24px;z-index:100;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onclick="openFeedback()" title="意见反馈"><div class="fb-float" style="position:static"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M18 2H2v12h4v4l4-4h8V2z"/><path d="M6 7h8M6 10h5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg></div><span style="font-size:11px;color:var(--slate-400);font-weight:500">意见反馈</span></div>
 <div class="fb-overlay" id="fbOverlay" onclick="if(event.target===this)closeFeedback()">
   <div class="fb-card" onclick="event.stopPropagation()">
     <button class="fb-close" onclick="closeFeedback()"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
@@ -2698,6 +3050,25 @@
     <div id="fbErr" style="color:#DC2626;font-size:12px;margin-top:4px"></div>
     <button class="fb-submit" onclick="submitFeedback()">提交反馈</button>
     <div id="fbDone" style="display:none;text-align:center;color:#10B981;font-weight:600;margin-top:14px">✓ 感谢反馈！</div>
+  </div>
+</div>
+
+<div class="mobile-tab-bar" id="mobileTabBar">
+  <div class="tab-item active" onclick="navigateTo('home')">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    首页
+  </div>
+  <div class="tab-item" onclick="navigateTo('results')">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    报告
+  </div>
+  <div class="tab-item" onclick="navigateTo('history')">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    历史
+  </div>
+  <div class="tab-item" onclick="navigateTo('pricing')">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    收费
   </div>
 </div>
 </body>
