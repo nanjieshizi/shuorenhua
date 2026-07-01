@@ -1884,11 +1884,20 @@
 
   <script>
     function navigateTo(page) {
+      // History always requires login
       if(!AppState.isLoggedIn && page === 'history') { openLogin(); return; }
-      if(!AppState.isLoggedIn && page === 'results') { showDemoResults(); return; }
+      // Results page routing
+      if (page === 'results') {
+        if (!AppState.isLoggedIn) { showDemoResults(true); return; }
+        if (!AppState.currentResults && !AppState.history.length) { showDemoResults(false); return; }
+        if (!AppState.currentResults && AppState.history.length) { viewHistory(AppState.history[0].id); return; }
+      }
+      _switchPage(page);
+    }
+    function _switchPage(page) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       var target = document.getElementById('page-' + page);
-      if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); if (!AppState.currentResults && AppState.history.length) viewHistory(AppState.history[0].id); } if (page === 'history') { renderHistory(); } }
+      if (target) { target.classList.add('active'); if (page === 'results') { target.classList.remove('section-hidden'); } if (page === 'history') { renderHistory(); } }
       document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
       var bar = document.getElementById('navInd'), pl = document.querySelector('.nav-links');
       if (page === 'home') { if (bar) bar.classList.remove('show'); scheduleAlign(); updateRemainDisplay(); window.scrollTo(0,0); return; }
@@ -2208,8 +2217,8 @@
       AppState.isTranslating = false;
     }
 
-    function showDemoResults() {
-      AppState.isDemo = true;
+    function showDemoResults(guest) {
+      AppState.isDemo = true; AppState.isDemoGuest = guest;
       var demoClauses = [
         { num:1, text:"第一条：甲方将其位于XX市XX区XX路XX号XX室的房屋（建筑面积89平方米，两室一厅一卫）出租给乙方使用。租赁期限自2026年7月1日起至2027年6月30日止，共计12个月。月租金为人民币3,500元，采取押一付三方式支付，押金为人民币3,500元。", annotations:[
           { text:"89平方米", type:"green", label:"注意核实", level:"轻微", title:"房屋面积以实测为准", desc:"合同中注明的面积通常为建筑面积而非使用面积，实际使用面积可能不足70㎡。根据《商品房屋租赁管理办法》，出租人应保证房屋符合约定用途。建议签约前实地测量使用面积并在合同中注明。", suggest:"在合同中补充'使用面积约XX平方米'，或以实测面积为准。" }
@@ -2238,11 +2247,24 @@
         clauses: demoClauses
       };
       showResults(demoResult, "房屋租赁合同");
+      setTimeout(function() {
+        var actions = document.querySelector('.results-actions');
+        if (!actions) return;
+        if (guest) {
+          actions.innerHTML = '<button class="btn-p" onclick="closeDemoAndLogin()"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>点击登录</button>';
+        } else {
+          actions.innerHTML = '<button class="btn-p" onclick="openModal()"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5.5v3M6.5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>点击生成</button>';
+        }
+      }, 100);
+    }
+    function closeDemoAndLogin() {
+      AppState.currentResults = null; AppState.isDemo = false;
+      navigateTo('home'); openLogin();
     }
 
     function showResults(results, contractType) {
       AppState.currentResults = results;
-      navigateTo('results');
+      _switchPage('results');
       var section = document.getElementById('results-section');
       section.classList.remove('section-hidden');
       section.style.display = '';
