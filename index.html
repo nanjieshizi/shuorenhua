@@ -2165,6 +2165,34 @@
       }
     });
 
+    function normalizeOCRText(text) {
+      // 合并 OCR 产生的视觉换行，恢复完整句子
+      // 规则：不以句末标点结尾的行 → 与下一行合并；空行保留为段落分隔
+      var lines = text.split('\n');
+      var result = [], buf = '';
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trimEnd();
+        if (!line.trim()) {
+          if (buf) { result.push(buf); buf = ''; }
+          result.push('');
+          continue;
+        }
+        // 新段落开头判断：第X条/第X章/第X节、编号开头(（一）/1./一,)
+        var isParaStart = /^(第[一二三四五六七八九十百千\d]+[条章节]|[（(][一二三四五六七八九十\d]+[）)]|\d+[.、．]|[一二三四五六七八九十][、,，]|[●■※☆①])/.test(line.trim());
+        if (buf && isParaStart) { result.push(buf); buf = line.trim(); continue; }
+        if (!buf) { buf = line.trim(); continue; }
+        // 上一行不以句末标点结尾 → 合并
+        var lastChar = buf.charAt(buf.length - 1);
+        if (/[。！？；：」"']/.test(lastChar)) {
+          result.push(buf); buf = line.trim();
+        } else {
+          buf += line.trim();
+        }
+      }
+      if (buf) result.push(buf);
+      return result.filter(function(l) { return l !== ''; }).join('\n\n');
+    }
+
     async function ocrSingleImage(file, idx, total) {
       var buf = await new Promise(function(ok) { var r = new FileReader(); r.onload = function(e) { ok(e.target.result); }; r.readAsArrayBuffer(file); });
       var bar = document.getElementById('ocrBar'), label = document.getElementById('ocrLabel');
@@ -2178,6 +2206,7 @@
         var ocrData = await ocrRes.json();
         if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
           txt = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
+          if (txt) txt = normalizeOCRText(txt);
         }
       } catch(e) {}
       if (!txt || txt.length < 10) {
@@ -2197,6 +2226,7 @@
           logger: function(m) { if (m.status === 'recognizing text') { var p = Math.round((idx / total) * 100 + m.progress * (100 / total)); bar.style.width = p + '%'; label.textContent = '识别中 ' + p + '%'; } }
         });
         txt = res.data.text.trim();
+        if (txt) txt = normalizeOCRText(txt);
       }
       var pct = Math.round((idx + 1) / total * 100);
       bar.style.width = pct + '%'; label.textContent = '识别第 ' + (idx + 1) + '/' + total + ' 张 (' + pct + '%)';
@@ -2281,7 +2311,7 @@
             if (curLine.trim()) lines.push(curLine.trim());
             full += lines.join('\n') + '\n\n';
           }
-          text = full.trim();
+          text = normalizeOCRText(full.trim());
           if (!text) { alert('PDF 未识别到文字，请确认文件是否为扫描件。扫描件建议转为图片上传'); btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return; }
         }
       }
