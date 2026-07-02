@@ -3030,7 +3030,6 @@
       doc += '.meta-score{font-size:28px;font-weight:800;color:#0f172a}';
       doc += '.meta-label{font-size:11px;color:#94a3b8}';
       doc += '.clause{margin-bottom:24px;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;page-break-inside:avoid}';
-      doc += '.clause-num{display:inline-block;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:10px}';
       doc += '.clause-text{text-align:justify;font-size:14px;line-height:2.1;color:#334155;margin-bottom:0}';
       doc += '.hl{font-weight:700;padding:0 3px;border-radius:2px}';
       doc += '.hl-r{color:#BE185D;background:rgba(219,39,119,0.14)}';
@@ -3083,7 +3082,6 @@
           txt = txt.split(a.text).join('<span class="hl hl-' + (a.type||'r').charAt(0) + '">' + a.text + '</span>');
         });
         doc += '<div class="clause">';
-        doc += '<span class="clause-num">第 ' + (ci + 1) + ' 条</span>';
         doc += '<div class="clause-text">' + txt + '</div>';
         if (c.annotations) c.annotations.forEach(function(a, ai) { fixType(a);
           var s = seqMap[ci + '-' + ai];
