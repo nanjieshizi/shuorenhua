@@ -793,6 +793,52 @@
     .modal-upload .file-confirm.visible { display: inline-flex; }
     .modal-upload input[type=file] { display: none; }
 
+    /* Image thumbnail grid */
+    .img-grid { display: none; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .img-grid.active { display: flex; }
+    .img-item {
+      width: 72px; height: 72px; border-radius: 10px; overflow: hidden;
+      position: relative; background: var(--slate-100); flex-shrink: 0;
+      border: 1.5px solid var(--slate-200);
+    }
+    .img-item img { width: 100%; height: 100%; object-fit: cover; }
+    .img-item .img-del {
+      position: absolute; top: 4px; right: 4px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(15,23,42,0.65); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 12px; line-height: 1;
+    }
+    .img-item.img-add {
+      display: flex; align-items: center; justify-content: center;
+      border-style: dashed; color: var(--slate-400); cursor: pointer;
+      font-size: 24px; font-weight: 300; transition: all 0.2s;
+    }
+    .img-item.img-add:hover { border-color: var(--red-p); color: var(--red-p); background: var(--red-plight); }
+
+    /* Upload action buttons */
+    .upload-actions {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .ua-btn {
+      flex: 1; min-width: 90px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 16px; border-radius: 12px;
+      border: 1.5px solid var(--slate-200);
+      background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+      color: var(--slate-600); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ua-btn:hover { border-color: var(--red-p); color: var(--red-p); background: var(--red-plight); }
+    .ua-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .ua-btn.ua-pdf { min-width: 0; flex: 0 0 auto; }
+
+    @media (max-width: 480px) {
+      .img-item { width: 56px; height: 56px; }
+      .ua-btn { padding: 10px 8px; font-size: 11px; gap: 4px; min-width: 70px; }
+      .ua-btn svg { width: 15px; height: 15px; }
+    }
+
     .modal-type { margin: 20px 0; display: flex; align-items: center; gap: 12px; }
     .modal-type label { font-size: 14px; font-weight: 600; color: var(--slate-700); white-space: nowrap; }
     .modal-type select {
@@ -1723,7 +1769,7 @@
       <div class="modal-header"><h2>上传合同</h2><p>粘贴文本、上传 PDF 或拍照，AI 自动识别风险条款</p></div>
       <div class="modal-tabs"><button class="active" onclick="switchInputTab('paste')"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2H11L13 4V13C13 13.5523 12.5523 14 12 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2Z" stroke="currentColor" stroke-width="1.3"/></svg>粘贴文本</button><button onclick="switchInputTab('upload')"><svg viewBox="0 0 16 16" fill="none"><path d="M8 11V3M4 7L8 3L12 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>上传文件</button></div>
       <div class="modal-panel active" id="panel-paste"><div class="ta-wrap"><textarea placeholder="在此粘贴合同/条款内容" id="contract-input"></textarea><button class="ta-clear" onclick="clearTextarea()" title="清空内容"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
-      <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">点击上传或拖拽文件</div><div class="up-hint">支持 PDF、JPG、PNG</div><div class="up-warn">图片识别率较低，建议使用文本粘贴或 PDF 上传</div></div><div class="file-confirm" id="fileConfirm"><span id="fileName">文件已上传</span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf"/></div></div>
+      <div class="modal-panel" id="panel-upload"><div class="modal-upload" id="uploadZone"><div class="img-grid" id="imgGrid"></div><div class="file-confirm" id="fileConfirm"><span id="fileName"></span><button class="file-delete" onclick="clearFile()" title="删除文件"><svg viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div><div id="upPrompt"><svg viewBox="0 0 48 48" fill="none"><path d="M24 32V16M16 24L24 16L32 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="up-text">上传合同文件</div><div class="up-hint">支持 PDF、JPG、PNG，图片最多 9 张</div><div class="up-warn">图片识别率较低，建议使用文本粘贴或 PDF 上传</div></div><div class="upload-actions" id="uploadActions"><button class="ua-btn" onclick="pickImages()"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="5.5" cy="5.5" r="1.5" fill="currentColor"/><path d="M1 11l4-4 3 3 3-4 5 6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>从相册选择</button><button class="ua-btn" onclick="capturePhoto()"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="3" fill="currentColor"/></svg>拍照上传</button><button class="ua-btn ua-pdf" onclick="pickPDF()"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2H11L13 4V13C13 13.55 12.55 14 12 14H3C2.45 14 2 13.55 2 13V3C2 2.45 2.45 2 3 2Z" stroke="currentColor" stroke-width="1.3"/></svg>上传 PDF</button></div><div class="ocr-progress" id="ocrProgress"><div class="ocr-bar" id="ocrBar"></div><span class="ocr-label" id="ocrLabel">识别中 0%</span></div><input type="file" id="imgInput" accept="image/*" multiple hidden><input type="file" id="camInput" accept="image/*" capture="environment" hidden><input type="file" id="pdfInput" accept=".pdf" hidden></div></div>
       <button class="modal-submit" id="btnTranslate" onclick="startTranslation()"><span class="btn-label">开始翻译</span><span class="btn-label-loading">分析中...</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button><div class="ai-progress" id="aiProgress"><div class="ai-bar" id="aiBar"></div></div>
       <div class="modal-footer"><div class="free-count"><span class="dot"></span><span id="modalRemain">每周免费 3,000 字</span></div><div class="trust-note"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/></svg>本工具不构成法律建议</div></div>
     </div>
@@ -1969,7 +2015,7 @@
 
     var SB = typeof supabase !== 'undefined' ? supabase.createClient('https://wvnwpradfjwjpzodsznp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bndwcmFkZmp3anB6b2Rzem5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODM4NzUsImV4cCI6MjA5NzY1OTg3NX0.NcPMcz631x1HD5DFmK5Sg1nQ0kQMCvPJOOKVdxOt6q8') : null;
     function generateUUID() { var u = localStorage.getItem('uid') || crypto.randomUUID(); localStorage.setItem('uid', u); return u; }
-    var AppState = { currentTab: 'paste', uploadedFile: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: [], userId: generateUUID(), isLoggedIn: false };
+    var AppState = { currentTab: 'paste', uploadedImages: [], uploadedPDF: null, isTranslating: false, currentResults: null, currentContractType: '', originalText: '', history: [], userId: generateUUID(), isLoggedIn: false };
     if(SB) (async function(){
       try { var r = await SB.auth.signInAnonymously(); if(!r.error && r.data && r.data.user) AppState.userId = r.data.user.id; } catch(e){}
       try { var s = await SB.auth.getSession(); if(s.data && s.data.session && s.data.session.user && s.data.session.user.email) { AppState.userId = s.data.session.user.id; AppState.isLoggedIn = true; document.getElementById('btnLogin').textContent = s.data.session.user.email.charAt(0).toUpperCase(); } } catch(e){}
@@ -2013,10 +2059,16 @@
 
     function clearTextarea() { document.getElementById('contract-input').value = ''; }
     function clearFile() {
-      AppState.uploadedFile = null; AppState.uploadedText = '';
-      document.getElementById('fileInput').value = '';
+      AppState.uploadedImages = []; AppState.uploadedPDF = null; AppState.uploadedText = '';
+      document.getElementById('imgInput').value = '';
+      document.getElementById('camInput').value = '';
+      document.getElementById('pdfInput').value = '';
       document.getElementById('fileConfirm').classList.remove('visible');
       document.getElementById('upPrompt').style.display = '';
+      document.getElementById('imgGrid').classList.remove('active');
+      document.getElementById('imgGrid').innerHTML = '';
+      document.getElementById('uploadActions').style.display = '';
+      updateUploadUI();
     }
     function clearInput() { clearTextarea(); clearFile(); }
 
@@ -2028,101 +2080,126 @@
       else { document.querySelector('.modal-tabs button:last-child').classList.add('active'); document.getElementById('panel-upload').classList.add('active'); }
     }
 
+    function pickImages() {
+      if (AppState.uploadedPDF) { alert('请先清除已选的 PDF 文件'); return; }
+      document.getElementById('imgInput').click();
+    }
+    function capturePhoto() {
+      if (AppState.uploadedPDF) { alert('请先清除已选的 PDF 文件'); return; }
+      document.getElementById('camInput').click();
+    }
+    function pickPDF() {
+      if (AppState.uploadedImages.length) { alert('请先清除已选的图片'); return; }
+      document.getElementById('pdfInput').click();
+    }
+    function removeImage(idx) {
+      AppState.uploadedImages.splice(idx, 1);
+      renderImageGrid();
+      if (!AppState.uploadedImages.length) { document.getElementById('upPrompt').style.display = ''; document.getElementById('uploadActions').style.display = ''; }
+      document.getElementById('imgInput').value = '';
+    }
+    function renderImageGrid() {
+      var grid = document.getElementById('imgGrid'), imgs = AppState.uploadedImages;
+      if (!imgs.length) { grid.classList.remove('active'); grid.innerHTML = ''; return; }
+      grid.classList.add('active');
+      var html = '';
+      imgs.forEach(function(f, i) {
+        html += '<div class="img-item"><img src="' + URL.createObjectURL(f) + '" alt=""><button class="img-del" onclick="event.stopPropagation();removeImage(' + i + ')">×</button></div>';
+      });
+      if (imgs.length < 9) html += '<div class="img-item img-add" onclick="pickImages()">+</div>';
+      grid.innerHTML = html;
+    }
+    function addImages(files) {
+      var remaining = 9 - AppState.uploadedImages.length;
+      var toAdd = Math.min(remaining, files.length);
+      for (var i = 0; i < toAdd; i++) {
+        var f = files[i];
+        if (f.type.indexOf('image/') !== 0) continue;
+        AppState.uploadedImages.push(f);
+      }
+      if (toAdd < files.length) alert('最多 9 张图片，已选 ' + AppState.uploadedImages.length + ' 张');
+      renderImageGrid();
+      document.getElementById('upPrompt').style.display = 'none';
+      updateUploadUI();
+    }
+    function updateUploadUI() {
+      var hasImg = AppState.uploadedImages.length > 0;
+      var hasPDF = !!AppState.uploadedPDF;
+      document.getElementById('uploadActions').style.display = (hasImg || hasPDF) ? 'none' : '';
+      if (!hasImg && !hasPDF) document.getElementById('upPrompt').style.display = '';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-      var uz = document.getElementById('uploadZone'), fi = document.getElementById('fileInput');
-      if (uz && fi) {
-        uz.addEventListener('click', function() { fi.click(); });
+      var imgInp = document.getElementById('imgInput');
+      var camInp = document.getElementById('camInput');
+      var pdfInp = document.getElementById('pdfInput');
+      if (imgInp) imgInp.addEventListener('change', function() { if (imgInp.files.length) addImages(imgInp.files); });
+      if (camInp) camInp.addEventListener('change', function() { if (camInp.files.length) addImages(camInp.files); });
+      if (pdfInp) pdfInp.addEventListener('change', function() {
+        if (!pdfInp.files.length) return;
+        var f = pdfInp.files[0];
+        if (f.type !== 'application/pdf') { alert('请上传 PDF 格式'); return; }
+        AppState.uploadedPDF = f; AppState.uploadedImages = [];
+        document.getElementById('fileConfirm').classList.add('visible');
+        document.getElementById('fileName').textContent = f.name;
+        document.getElementById('upPrompt').style.display = 'none';
+        document.getElementById('imgGrid').classList.remove('active');
+        document.getElementById('imgGrid').innerHTML = '';
+        updateUploadUI();
+      });
+      // Drag & drop for upload zone
+      var uz = document.getElementById('uploadZone');
+      if (uz) {
         uz.addEventListener('dragover', function(e) { e.preventDefault(); uz.classList.add('dragover'); });
         uz.addEventListener('dragleave', function() { uz.classList.remove('dragover'); });
-        uz.addEventListener('drop', function(e) { e.preventDefault(); uz.classList.remove('dragover'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
-        fi.addEventListener('change', function() { if (fi.files.length) handleFile(fi.files[0]); });
+        uz.addEventListener('drop', function(e) {
+          e.preventDefault(); uz.classList.remove('dragover');
+          var files = Array.from(e.dataTransfer.files);
+          var imgs = files.filter(function(f) { return f.type.indexOf('image/') === 0; });
+          var pdfs = files.filter(function(f) { return f.type === 'application/pdf'; });
+          if (imgs.length && pdfs.length) { alert('不允许图片和 PDF 混合上传'); return; }
+          if (imgs.length) addImages(imgs);
+          if (pdfs.length) { document.getElementById('pdfInput').files = e.dataTransfer.files; pdfInp.dispatchEvent(new Event('change')); }
+        });
       }
     });
 
-    function handleFile(file) {
-      var allowed = ['image/jpeg','image/png','application/pdf'];
-      if (allowed.indexOf(file.type) === -1) { alert('请上传JPG/PNG/PDF格式'); return; }
-      AppState.uploadedFile = file;
-      AppState.uploadedText = '';
-      document.getElementById('fileName').textContent = file.name;
-      document.getElementById('fileConfirm').classList.add('visible');
-      document.getElementById('upPrompt').style.display = 'none';
-
-      var reader = new FileReader();
-      reader.onload = async function(e) {
-        var buf = e.target.result;
-        var prog = document.getElementById('ocrProgress');
-        var bar = document.getElementById('ocrBar');
-        var label = document.getElementById('ocrLabel');
-        prog.classList.add('active');
-        try {
-          if (file.type === 'application/pdf') {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-            var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-            var full = '';
-            for (var i = 1; i <= pdf.numPages; i++) {
-              var page = await pdf.getPage(i);
-              var ct = await page.getTextContent();
-              var lines = [], curY = null, curLine = '';
-              ct.items.forEach(function(it) {
-                var y = Math.round(it.transform[5]);
-                if (curY === null) { curY = y; }
-                if (Math.abs(y - curY) > 2) {
-                  lines.push(curLine.trim());
-                  curLine = it.str; curY = y;
-                } else {
-                  curLine += it.str;
-                }
-              });
-              if (curLine.trim()) lines.push(curLine.trim());
-              full += lines.join('\n') + '\n\n';
-              var pct = Math.round(i / pdf.numPages * 100);
-              bar.style.width = pct + '%'; label.textContent = '识别中 ' + pct + '%';
-            }
-            AppState.uploadedText = full.trim();
-          } else if (file.type.indexOf('image/') === 0) {
-            var txt = '';
-            try {
-              // 主方案：OCR.space 云端识别
-              var fd = new FormData();
-              fd.append('file', new Blob([buf], { type: file.type }), file.name);
-              fd.append('language', 'chs');
-              fd.append('isOverlayRequired', 'false');
-              var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
-              var ocrData = await ocrRes.json();
-              if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
-                txt = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
-              }
-            } catch(e) {}
-            // 兜底：OCR.space 失败时用 Tesseract 本地识别
-            if (!txt || txt.length < 10) {
-              var img = await new Promise(function(ok) { var i = new Image(); i.onload = function() { ok(i); }; i.src = URL.createObjectURL(new Blob([buf], { type: file.type })); });
-              var c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
-              var ctx = c.getContext('2d'); ctx.filter = 'contrast(1.4) brightness(1.1)'; ctx.drawImage(img, 0, 0); ctx.filter = 'none';
-              var idata = ctx.getImageData(0, 0, c.width, c.height), d = idata.data, total = d.length / 4;
-              var hist = new Array(256).fill(0);
-              for (var j = 0; j < d.length; j += 4) { var g = Math.round(d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114); hist[g]++; }
-              var sum = 0; for (var k = 0; k < 256; k++) sum += k * hist[k];
-              var wB = 0, wF = 0, sB = 0, mB = 0, mF = 0, maxV = 0, thresh = 128;
-              for (var t = 0; t < 256; t++) { wB += hist[t]; if (wB === 0 || wB === total) continue; wF = total - wB; sB += t * hist[t]; mB = sB / wB; mF = (sum - sB) / wF; var v = wB * wF * (mB - mF) * (mB - mF); if (v > maxV) { maxV = v; thresh = t; } }
-              for (var j = 0; j < d.length; j += 4) { var bw = (d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114) > thresh ? 255 : 0; d[j] = d[j+1] = d[j+2] = bw; }
-              ctx.putImageData(idata, 0, 0);
-              var res = await Tesseract.recognize(c.toDataURL('image/png'), 'chi_sim', {
-                logger: function(m) { if (m.status === 'recognizing text') { var p = Math.round(m.progress*100); bar.style.width = p + '%'; label.textContent = '识别中 ' + p + '%'; } }
-              });
-              txt = res.data.text.trim();
-            }
-            bar.style.width = '100%'; label.textContent = '识别中 100%';
-            AppState.uploadedText = txt || ('[OCR识别失败: ' + file.name + ']');
-          } else {
-            AppState.uploadedText = new TextDecoder().decode(buf);
-          }
-        } catch(err) {
-          AppState.uploadedText = '[文件识别失败: ' + file.name + ']';
+    async function ocrSingleImage(file, idx, total) {
+      var buf = await new Promise(function(ok) { var r = new FileReader(); r.onload = function(e) { ok(e.target.result); }; r.readAsArrayBuffer(file); });
+      var bar = document.getElementById('ocrBar'), label = document.getElementById('ocrLabel');
+      var txt = '';
+      try {
+        var fd = new FormData();
+        fd.append('file', new Blob([buf], { type: file.type }), file.name);
+        fd.append('language', 'chs');
+        fd.append('isOverlayRequired', 'false');
+        var ocrRes = await fetch('https://api.ocr.space/parse/image', { method: 'POST', headers: { 'apikey': 'helloworld' }, body: fd });
+        var ocrData = await ocrRes.json();
+        if (ocrData.ParsedResults && ocrData.ParsedResults.length) {
+          txt = ocrData.ParsedResults.map(function(r) { return r.ParsedText; }).join('\n').trim();
         }
-        prog.classList.remove('active');
-      };
-      reader.readAsArrayBuffer(file);
+      } catch(e) {}
+      if (!txt || txt.length < 10) {
+        // Tesseract fallback
+        var img = await new Promise(function(ok) { var i = new Image(); i.onload = function() { ok(i); }; i.src = URL.createObjectURL(new Blob([buf], { type: file.type })); });
+        var c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+        var ctx = c.getContext('2d'); ctx.filter = 'contrast(1.4) brightness(1.1)'; ctx.drawImage(img, 0, 0); ctx.filter = 'none';
+        var idata = ctx.getImageData(0, 0, c.width, c.height), d = idata.data;
+        var hist = new Array(256).fill(0), totalPx = d.length / 4;
+        for (var j = 0; j < d.length; j += 4) { var g = Math.round(d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114); hist[g]++; }
+        var sumH = 0; for (var k = 0; k < 256; k++) sumH += k * hist[k];
+        var wB = 0, wF, sB = 0, mB, mF, maxV = 0, thresh = 128;
+        for (var t = 0; t < 256; t++) { wB += hist[t]; if (wB === 0 || wB === totalPx) continue; wF = totalPx - wB; sB += t * hist[t]; mB = sB / wB; mF = (sumH - sB) / wF; var v = wB * wF * (mB - mF) * (mB - mF); if (v > maxV) { maxV = v; thresh = t; } }
+        for (var j = 0; j < d.length; j += 4) { var bw = (d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114) > thresh ? 255 : 0; d[j] = d[j+1] = d[j+2] = bw; }
+        ctx.putImageData(idata, 0, 0);
+        var res = await Tesseract.recognize(c.toDataURL('image/png'), 'chi_sim', {
+          logger: function(m) { if (m.status === 'recognizing text') { var p = Math.round((idx / total) * 100 + m.progress * (100 / total)); bar.style.width = p + '%'; label.textContent = '识别中 ' + p + '%'; } }
+        });
+        txt = res.data.text.trim();
+      }
+      var pct = Math.round((idx + 1) / total * 100);
+      bar.style.width = pct + '%'; label.textContent = '识别第 ' + (idx + 1) + '/' + total + ' 张 (' + pct + '%)';
+      return txt || ('[OCR识别失败]');
     }
 
     function generateMockResults(type) {
@@ -2168,10 +2245,44 @@
       AppState.currentContractType = type;
 
       var text = document.getElementById('contract-input').value.trim();
-      var isFile = AppState.uploadedFile && !text;
+      var isImage = AppState.uploadedImages.length > 0;
+      var isPDF = !!AppState.uploadedPDF;
+      var isFile = isImage || isPDF;
       if (isFile) {
-        text = AppState.uploadedText || '';
-        if (!text) { alert('文件读取中，请稍后再试'); btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return; }
+        if (isImage) {
+          // Multi-image OCR
+          var prog = document.getElementById('ocrProgress'), bar = document.getElementById('ocrBar'), label = document.getElementById('ocrLabel');
+          prog.classList.add('active'); bar.style.width = '0%'; label.textContent = '准备识别...';
+          var texts = [], imgs = AppState.uploadedImages;
+          for (var i = 0; i < imgs.length; i++) {
+            var t = await ocrSingleImage(imgs[i], i, imgs.length);
+            if (t && t !== '[OCR识别失败]') texts.push(t);
+          }
+          prog.classList.remove('active');
+          text = texts.join('\n---\n').trim();
+          if (!text) { alert('图片识别失败，请尝试更清晰的图片或使用文本粘贴'); btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return; }
+        } else if (isPDF) {
+          // PDF extraction
+          var buf = await new Promise(function(ok) { var r = new FileReader(); r.onload = function(e) { ok(e.target.result); }; r.readAsArrayBuffer(AppState.uploadedPDF); });
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+          var full = '';
+          for (var i = 1; i <= pdf.numPages; i++) {
+            var page = await pdf.getPage(i);
+            var ct = await page.getTextContent();
+            var lines = [], curY = null, curLine = '';
+            ct.items.forEach(function(it) {
+              var y = Math.round(it.transform[5]);
+              if (curY === null) curY = y;
+              if (Math.abs(y - curY) > 2) { lines.push(curLine.trim()); curLine = it.str; curY = y; }
+              else { curLine += it.str; }
+            });
+            if (curLine.trim()) lines.push(curLine.trim());
+            full += lines.join('\n') + '\n\n';
+          }
+          text = full.trim();
+          if (!text) { alert('PDF 未识别到文字，请确认文件是否为扫描件。扫描件建议转为图片上传'); btn.classList.remove('loading'); btn.disabled = false; AppState.isTranslating = false; return; }
+        }
       }
       if (!text) text = '房屋租赁合同示例';
       AppState.originalText = text;
@@ -2186,7 +2297,7 @@
 
       try {
         var body = { text: text, type: type };
-        if (isFile && AppState.uploadedFile.type.indexOf('image/') === 0) body.ocr = true;
+        if (isImage) body.ocr = true;
         var response = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
